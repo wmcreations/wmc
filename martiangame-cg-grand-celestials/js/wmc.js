@@ -248,10 +248,17 @@
   
   // Enable WMC search functions
   //
+  //
+  //
+  //
+  //
   
   // window['testsrvr'] = api.server;
   // window['env'] = api.environment;
   window['player'] = api.player;
+  window['testStorage'] = storage;
+  window['ui'] = ui;
+  
 })(window, document, undefined);
 
 
