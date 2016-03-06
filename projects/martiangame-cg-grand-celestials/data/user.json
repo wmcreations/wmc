@@ -1,0 +1,12 @@
+{
+  "environment":"",
+  "usertype":"",
+  "username":"",
+  "password":"",
+  "profile": {
+    "first_name":"",
+    "last_name":"",
+    "gender":"",
+    "country":""
+  }
+}
