@@ -1,5 +1,5 @@
 ﻿// Walandio Martian Creation - SDK
-// Version 0.0.1
+// Version 0.0.2
 // Game Project - Card Game: Grand Celestials
 // 
 
@@ -85,6 +85,35 @@
          
        }
        return;
+      case 'load':
+        console.debug('This is load function');
+        window[define] = function(dfn, opts, callbackFn){
+           opts = {};
+           if(callbackFn instanceof Function === false){ callbackFn = callbackFn; }
+           
+           if(typeof dfn === 'object' && callbackFn instanceof Function === false){
+            dfn.forEach(function(val, key){
+              console.debug(val);
+              
+              // Checks the function from UI to load
+              if(val in ui){
+                ui[val].call(this);
+              }
+
+              // Checks the function from API to load
+              if (val in api){
+                if(val === 'environment'){ return false; }
+                api[val].call(this);
+              }
+              
+            })
+            
+            callbackFn = callbackFn;
+            return;
+           }
+           
+        }
+        return;
       default:
       
         break;
@@ -228,10 +257,17 @@
       // Height - Define the y value of the screen
       // Unit - Define ht measurement unit: e.g. px, pt, em, etc..
       
+      alert('This is screen settings!')
+      
+      width = width;
+      height = height;
+      unit = unit;
+      
       var x, y;
       
       x = width + "" + unit;
       y = height + "" +  unit;
+      
       
     }
     
@@ -259,7 +295,7 @@
   window['testStorage'] = storage;
   window['ui'] = ui;
   
-})(window, document, undefined);
+}).apply(null, ('defineFn' in window === false) ? [ window ] : [ console.debug('defineFn could not be created.') ])
 
 
 
