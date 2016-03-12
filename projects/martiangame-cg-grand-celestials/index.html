@@ -55,15 +55,13 @@
   // This is the Client's Side of Customizing SDK
   //
   //
-  (function(window, define){
+  (function(WMC, define){
     
     init = {};
+    var funcs = ['login','server','start','load','mapFunctions'];
     
     // Call functions to be exposed and available to use
-    defineFn('login');
-    defineFn('server');
-    defineFn('start')
-    defineFn('load');
+    defineFn(funcs);
     
     // Start Customizing Here
     var usr = 'testUser', 
@@ -82,7 +80,7 @@
     server('eden');
     load(['screen','deck','hero']);
     
-  })(window);
+  })(self, document);
   </script>
   <script src="wmc-start.js" type="text/javascript"></script>
 </body>

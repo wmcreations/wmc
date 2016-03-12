@@ -1,7 +1,16 @@
 ﻿// Walandio Martian Creation - SDK
-// Version 0.0.2
+// Version 0.0.3
 // Game Project - Card Game: Grand Celestials
+// @ Developer: walandio, martian
 // 
+// Features:
+//  - Easy creating and defining functions in Object Array
+//  - Created Log System for Mapping Functions: which allows to check the functions created by WMC 
+//  - Lots of Choices for developer to customize functions
+//  - Improved securing the scope functions by not exposing publicly
+//  - 
+//  - 
+//  - 
 
 (function(window, modules, undefined){
   
@@ -12,112 +21,142 @@
   this.defineFn = {};
   
   // Give function a definition to start creating that function
-  defineFn = function(define, type){
+  defineFn = function(createFn, args){
+    var define = createFn || {}, dfnEach, defineFunctions;
     
-    typeof define === 'string' ? [ define = define ]  : 
-    typeof define === 'function' ? [ (define = new Function) ].call() : 
-    typeof define === 'undefined' ? [ define = '' ] :
-    [ define = new Array ].prototype[define] ;
+    dfnEach = function(dfnLists){
+      dfnLists = dfnLists;
+      dfnLists.forEach(function(val,key){
+        console.debug('Creating functions >>>>>>>', val);
+        define = val;
+        return defineFunctions(define);
+      });
+    }
     
-    switch (define) {
-      
-      case 'login':
-        
-        // if(type == 'function' || type.toLowerCase() == 'function' || type == 'func'){
-        //   type = type.toLowerCase() || 'function';
-        // }
-        
-        window[define] = function(usr, pwd){
-          this.usr = usr;
-          this.pwd = pwd;
-          this.key = '';
-          this.id = '';
+    defineFunctions = function(define){
+      switch (define) {
+        case 'login':
+
+          args = args || [] || {};
+          window[define] = function(usr, pwd){
+            this.usr = usr;
+            this.pwd = pwd;
+            this.key = '';
+            this.id = '';
+            this.WMC = true;
+            
+            return this;
+          }
+          
+          // WMC functions is true
+          this.WMC = true;
+          console.debug('Created function >>>', define);
+          return;
+          
+        case 'start':
+          args = args || [] || {};
+          window[define] = function(nameFn, startFn){
+
+            if (nameFn == 'deck'){
+              nameFn = api.deck;
+              return nameFn.call(this);
+            } else if (nameFn == 'hero'){
+              nameFn = api.hero;
+              return nameFn.call(this);
+            }
+
+            (startFn instanceof Function === true) ? 
+            [ nameFn = (startFn).call(this) ] : 
+            (startFn instanceof Function === false) ? 
+            [ nameFn.call(this) ] :
+            console.throw(nameFn+' >>>> It is not a function. The function does not exist.') ;
+            
+            return;
+          }
+          console.debug('Created function >>>', define);
+          
           this.WMC = true;
           return this;
-        }
+          
+        case 'screen':
         
-        // WMC functions is true
-        this.WMC = true;
-        console.debug('Created function >>>', define);
-        return;
-      case 'start':
-        
-        window[define] = function(nameFn, startFn){
-
-          if (nameFn == 'deck'){
-            nameFn = api.deck;
-            return nameFn.call(this);
-          } else if (nameFn == 'hero'){
-            nameFn = api.hero;
-            return nameFn.call(this);
-          }
-
-          (startFn instanceof Function === true) ? 
-          [ nameFn = (startFn).call(this) ] : 
-          (startFn instanceof Function === false) ? 
-          [ nameFn.call(this) ] :
-          console.throw(nameFn+' >>>> It is not a function. The function does not exist.') ;
-          
-          return;
-        }
-        console.debug('Created function >>>', define);
-        return;
-      case 'screen':
-        window[define] = function(width, height){
-          
-        }
-        return;
-      case 'server':
-        window[define] = function(choose){
-          
-          typeof choose === 'undefined' ? [ console.error('Please specify your correct environment.') ] : 
-          choose instanceof Function ? [ (choose).call(this) ] :
-          typeof choose === 'string' ? [ api.server(choose) ] : 
-          console.debug('Sorry the environment does not exist. Please try again.') ;
-           
-          console.debug('Initializing... >>>>>>', define);
-          return; 
-        }
-        console.debug('Created function >>>', define);
-        return;
-      case 'mapFunctions':
-       window[define] =  function(lookupFn){
-         
-       }
-       return;
-      case 'load':
-        console.debug('This is load function');
-        window[define] = function(dfn, opts, callbackFn){
-           opts = {};
-           if(callbackFn instanceof Function === false){ callbackFn = callbackFn; }
-           
-           if(typeof dfn === 'object' && callbackFn instanceof Function === false){
-            dfn.forEach(function(val, key){
-              console.debug(val);
-              
-              // Checks the function from UI to load
-              if(val in ui){
-                ui[val].call(this);
-              }
-
-              // Checks the function from API to load
-              if (val in api){
-                if(val === 'environment'){ return false; }
-                api[val].call(this);
-              }
-              
-            })
+          args = args || [] || {};
+          window[define] = function(width, height){
             
-            callbackFn = callbackFn;
-            return;
-           }
-           
-        }
-        return;
-      default:
-      
-        break;
+          }
+          
+          this.WMC = true;
+          return this;
+          
+        case 'server':
+          
+          args = args || [] || {};
+          window[define] = function(choose){
+            
+            typeof choose === 'undefined' ? [ console.error('Please specify your correct environment.') ] : 
+            choose instanceof Function ? [ (choose).call(this) ] :
+            typeof choose === 'string' ? [ api.server(choose) ] : 
+            console.debug('Sorry the environment does not exist. Please try again.') ;
+            
+            console.debug('Initializing... >>>>>>', define);
+            return; 
+          }
+          console.debug('Created function >>>', define);
+          
+          this.WMC = true;
+          return this;
+          
+        case 'mapFunctions':
+
+          window[define] =  fn.checkFuncs(args);
+          if(typeof objects !== 'array'){ return console.error('Could not map available WMC functions.') }
+          
+          this.WMC = true;
+          return this;
+        
+        case 'load':
+        
+          args = args || [] || {};
+          console.debug('This is load function');
+          window[define] = function(dfn, opts, callbackFn){
+            opts = {};
+            if(callbackFn instanceof Function === false){ callbackFn = callbackFn; }
+            
+            if(typeof dfn === 'object' && callbackFn instanceof Function === false){
+              dfn.forEach(function(val, key){
+                console.debug(val);
+                
+                // Checks the function from UI to load
+                if(val in ui){
+                  ui[val].call(this);
+                }
+
+                // Checks the function from API to load
+                if (val in api){
+                  if(val === 'environment'){ return false; }
+                  api[val].call(this);
+                }
+                
+              });
+              
+              callbackFn = callbackFn;
+              this.WMC = true;
+              return this;
+            }
+            
+          }
+          return;
+        default:
+          break;
+      }
     }
+    
+    typeof define === 'string' ? [ defineFunctions(define) ]  : 
+    typeof define === 'function' ? [ define.call(this) ] :
+    (createFn instanceof Array) ? [ dfnEach(createFn) ] : 
+    typeof define === 'undefined' ? [ define = '' ] :
+    [ console.error('Could not create functions.') ];
+    
   }
   // ---------------------------- End Security Functions -----------------------------
   //
@@ -133,23 +172,37 @@
   fn = {
     
     engine: {
-      
       start: function(apiName, apiCall){
-        
+        apiCall = apiCall || '';
+        apiName.call(this);
+        console.debug('Working function');
       },
       end: function(){
-        
       },
       error: function(err){
-        
       },
       after: function(fn){
         return fn();
       },
       init: function(){
-        
+      }
+    },
+    checkFuncs: function(lookupFn){
+      if(lookupFn instanceof Array){
+        // Checks all functions created by WMC and evaluate
+        lookupFn.forEach(function(val, key){
+          console.debug(val);
+          if(val in window){
+            console.debug('WMC checking functions >>>>>>', lookupFn);
+            fn.engine(lookupFn);
+          }
+        });
       }
       
+      if(lookupFn in window){
+        console.debug('----WMC---- function: ', lookupFn);
+      }
+      return;
     }
     
   };
@@ -165,6 +218,7 @@
       }
     },
     server: function(env){
+      //
       this.environment = (function(selectThis){
         selectThis = selectThis || '';
         for(var checkEnv in api.environment){
@@ -182,9 +236,11 @@
       if(env){ return this; }
     },
     deck: function(){
+      //
       alert('Choose your deck!')
     },
     hero: function(){
+      //
       alert('Choose you hero!')
     },
     
@@ -255,7 +311,7 @@
     screen: function(width, height, unit){
       // Width - Define the x value of the screen
       // Height - Define the y value of the screen
-      // Unit - Define ht measurement unit: e.g. px, pt, em, etc..
+      // Unit - Define the measurement unit: e.g. px, pt, em, etc..
       
       alert('This is screen settings!')
       
@@ -269,12 +325,37 @@
       y = height + "" +  unit;
       
       
+      
+      
     }
     
   };
   
   // Modular Storage (Offline)
   storage = {
+    
+  }
+  
+  // EventListeners
+  //
+  //
+  //
+  
+  // Checks once the uers is logged in and then disable login function
+  if('login' in window){
+    if(addEventListener){
+      login.addEventListener('message', function(){
+        console.debug('Complete login datbase');
+        console.debug('Deleting Function');
+        
+        delete window['login'];
+        window['logout'] = function(usr){
+          console.debug('This is logout function');
+        }
+        
+      });
+    }
+  } else {
     
   }
   
