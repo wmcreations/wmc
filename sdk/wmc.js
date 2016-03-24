@@ -146,6 +146,12 @@
             
           }
           return;
+        case 'connect':
+        
+          window[define] = api.callDataFunc ;
+          console.debug('Created function >>>>>> ',define);
+          return;
+          
         default:
           break;
       }
@@ -209,6 +215,35 @@
   
   // Modular API
   api = {
+    callDataFunc: function(data, config, callback){
+      data = 'ws://' + data;
+      try{
+        socket = new Websocket (data);
+        
+        // socket.onopen = function(openEvent){
+        //   console.debug('Websocket Status: Socket Open');
+        //   document.getElementById("server-status").innerHTML = 
+        //   "Websocket Status: Socket Open";
+        // }
+        
+        socket.onmessage = function(evt){
+          console.log('Message >>>>>>>', messageEvent);
+          console.log('Data >>>>>>'+messageEvent.data);
+          alert('I got data!'+ evt.data);
+        }
+        
+        // socket.onerror = function(errorEvent){
+          
+        // }
+        
+        // socket.onclose = function(closeEvent){
+          
+        // }
+        
+      } catch (err){
+        (window.console) ? console.debug(err) : console.log(err) ;
+      }
+    },
     callback: function(serverName){
       for(var checkpoint in api.environment){
         if(serverName === checkpoint){
@@ -236,14 +271,23 @@
       if(env){ return this; }
     },
     deck: function(){
-      //
-      alert('Choose your deck!')
+      // API Call - deck.json
+      alert('Choose your deck!');
+      var ws = 'ws://localhost:29330/projects/martiangame-cg-grand-celestials/data/deck.json';
     },
     hero: function(){
-      //
-      alert('Choose you hero!')
+      // API Call - hero.json
+      alert('Choose you hero!');
+      var ws = 'ws://localhost:29330/projects/martiangame-cg-grand-celestials/data/hero.json';
     },
-    
+    // Websocket Connection Server Data
+    ws: function(host){
+      
+    },
+    // Long polling AJAX Connection Server Data
+    get: function(host){
+      
+    },
     // This is you server environment
     // Note: This is required to login and searches it. If it does not exist,
     // the user will be notified to try to connect on a different server.
@@ -323,8 +367,6 @@
       
       x = width + "" + unit;
       y = height + "" +  unit;
-      
-      
       
       
     }

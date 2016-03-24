@@ -44,6 +44,9 @@
     
   </main>
   
+  <div id="server-status"></div>
+  <div id="server-response"></div>
+  <div id="server-data"></div>
   
   
   
@@ -58,7 +61,7 @@
   (function(WMC, define){
     
     init = {};
-    var funcs = ['login','server','start','load',];
+    var funcs = ['login','server','start','load','connect'];
     
     // Call functions to be exposed and available to use
     defineFn(funcs);
@@ -77,6 +80,17 @@
       return;
     })
     
+    var loc = location,
+              host = loc.host,
+              hostname = loc.hostname,
+              prot = loc.protocol,
+              port = loc.port,
+              path = loc.pathname,
+              url = host + path + "data/game.json",
+              data = url;
+              console.log(data);
+              
+    connect(data);
     server('eden');
     load(['screen','deck','hero']);
     
