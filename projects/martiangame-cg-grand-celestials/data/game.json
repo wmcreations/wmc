@@ -1,48 +1,46 @@
-[
-  {
-    "server":"",
-    "player_name":"",
-    "player_level":"",
-    "player_stats":{
-      // This is 
-      "avatar_hero":"",
-      "experience": 0,
-      "max_experience":100,
-      "title":"",
-      "energy_source":"",
-      "energy_amount":"",
-      "status_ailments":{
-        "curse":false,
-        "silence":false,
-        "death":false,
-        "poison":false,
-        "":false
-      },
-      // This is the player's skills. The player can only have 1 passive skill
-      // that will help boost your avatar hero's stats, battle conditions, experience
-      // and skills. As the player levels up, its player's skills gets stronger
-      "player_skill":{
-        "skillname_1": false,
-        "skillname_2": false,
-        "skillname_3": false,
-        "skillname_4": false,
-        "skillname_5": false,
-        "skillname_6": false,
-        "skillname_7": false,
-        "skillname_8": false,
-        "skillname_9": false
-      },
-      "player_skill_exp":0,
-      "player_skill_max_exp":100,
-      "player_skill_usage":"",
-      "avatar_hero_skills":{
-        "slot1":"",  
-        "slot2":"",  
-        "slot3":"",  
-        "slot4":"",  
-        "slot5":""  
-      },
-      "max_skill_slots":5
-    }
+{
+  "server":"",
+  "player_name":"",
+  "player_level":"",
+  "player_stats":{
+    // This is 
+    "avatar_hero":"",
+    "experience": 0,
+    "max_experience":100,
+    "title":"",
+    "energy_source":"",
+    "energy_amount":"",
+    "status_ailments":{
+      "curse":false,
+      "silence":false,
+      "death":false,
+      "poison":false,
+      "":false
+    },
+    // This is the player's skills. The player can only have 1 passive skill
+    // that will help boost your avatar hero's stats, battle conditions, experience
+    // and skills. As the player levels up, its player's skills gets stronger
+    "player_skill":{
+      "skillname_1": false,
+      "skillname_2": false,
+      "skillname_3": false,
+      "skillname_4": false,
+      "skillname_5": false,
+      "skillname_6": false,
+      "skillname_7": false,
+      "skillname_8": false,
+      "skillname_9": false
+    },
+    "player_skill_exp":0,
+    "player_skill_max_exp":100,
+    "player_skill_usage":"",
+    "avatar_hero_skills":{
+      "slot1":"",
+      "slot2":"",
+      "slot3":"",
+      "slot4":"",
+      "slot5":"" 
+    },
+    "max_skill_slots":5
   }
-]
+}

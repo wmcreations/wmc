@@ -1,0 +1,24 @@
+{
+  /* --------------
+   * Form Settings
+   * --------------
+   */
+  "form":{
+    "login":["username","password"],
+    "email":["sender","receiver"]
+  },
+  /* --------------
+   * Data Settings
+   * --------------
+   */
+  "data":{
+    "projects":{
+      "cg-grand-celestials":{
+        "user":"user.json",
+        "deck":"deck.json",
+        "game":"game.json",
+        "quests":"quests.json"
+      }
+    }
+  }
+}

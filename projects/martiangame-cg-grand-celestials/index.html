@@ -15,12 +15,12 @@
 </head>
 <body>
   
-  <main class="game-wrapper">
+  <main wmc class="game-wrapper" data-wmc-template="on">
     
-    <menu class="wmc-menu">
+    <menu wmc class="wmc-menu" data-wmc-label="display" data-wmc-type="menu">
       <h1>Press Any Key to Start Game</h1>
       
-      <ul class="wmc game-display" data-gamedisplay="false">
+      <ul class="game-display" data-gamedisplay="false">
         <li data-newgame="true">New Game</li>
         <li data-savedata="0" data-maxdata="3">Load Game</li>
         <li data-game>Options</li>
@@ -28,11 +28,10 @@
       </ul>
     </menu>
     
-    
-    <section class="wmc game-display" data-environmen="" data-gamedisplay="true">  
+    <section wmc class="game-display" data-wmc-label='display' data-wmc-type="">  
     </section>
     
-    <section class="wmc login-user" data-logdata="" data-gamedisplay="false">
+    <section wmc class="wmc login-user" data-wmc-logdata="" data-wmc-gamedisplay="false">
       <form method="post" data-action="">
         <input type="text" value="Enter Username"> <br>
         <input type="password" label="Enter Password"> <br>
@@ -41,6 +40,9 @@
       </form>
     </section>
     
+    <section wmc class="wmc-login" data-wmc-label="form" data-wmc-type="login">
+      {{define:true}}
+    </section>
     
   </main>
   
@@ -60,11 +62,21 @@
   //
   (function(WMC, define){
     
-    init = {};
-    var funcs = ['login','server','start','load','connect'];
+    // Listener
+    var wmcForm = document.getElement
     
-    // Call functions to be exposed and available to use
-    defineFn(funcs);
+    // Setup functions
+    init = {};
+    var funcs = [
+      'login',
+      'server',
+      'start',
+      'load',
+      'template'
+    ];
+    
+    // Open WMCjs permission and call functions to be exposed and available to use
+    WMCjs('open').defineFn(funcs);
     
     // Start Customizing Here
     var usr = 'testUser', 
@@ -73,28 +85,40 @@
     var userlogin = login(usr, pwd);
     start('hello', function(usr, pwd){
       
-      console.debug('Hello '+userlogin.usr+'!! >>>>>>>>>>>>>>>>', userlogin.usr);
+      console.debug('Hello ' + userlogin.usr + '!! >>>>>>>>>>>>>>>>', userlogin.usr);
       console.debug('User password:', userlogin.pwd)
-      alert("Username: "+userlogin.usr+"\nPassword: "+userlogin.pwd);
+      alert("Username: "+userlogin.usr+"\nPassword: " + userlogin.pwd);
       
       return;
     })
     
-    var loc = location,
-              host = loc.host,
-              hostname = loc.hostname,
-              prot = loc.protocol,
-              port = loc.port,
-              path = loc.pathname,
-              url = host + path + "data/game.json",
-              data = url;
-              console.log(data);
-              
-    connect(data);
-    server('eden');
-    load(['screen','deck','hero']);
+    var data, loc, host, hostname, prot, port, path, url, data, json;
     
-  })(self, document);
+    data = {
+      id: 1,
+      first: "",
+      last: "",
+      key: ""
+    }
+    
+    if('location' in window){
+        loc = location,
+        host = loc.host,
+        hostname = loc.hostname,
+        prot = loc.protocol,
+        port = loc.port,
+        path = loc.pathname,
+        json = "data/game.json",
+        url = host,
+        ws = url;
+        console.log(ws);
+    }
+    
+    // connect(data, ws);
+    server('eden');
+    load(['template','screen','deck','hero']);
+    
+  })( (window.self == window.parent) ? parent : self, document);
   </script>
   <script src="wmc-start.js" type="text/javascript"></script>
 </body>
