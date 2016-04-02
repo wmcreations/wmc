@@ -9,7 +9,7 @@
   <meta name="author" content="Walandio Martian Creation">
   <meta name="format-detection" content="HTML5">
 
-  <!--<link rel="stylesheet" href="css/default.css">-->
+  <link rel="stylesheet" href="../../sdk/wmc.css">
   <!--<link rel="stylesheet" href="css/wmcAnimat.css">-->
 
 </head>
@@ -18,26 +18,11 @@
   <main wmc class="game-wrapper" data-wmc-template="on">
     
     <menu wmc class="wmc-menu" data-wmc-label="display" data-wmc-type="menu">
-      <h1>Press Any Key to Start Game</h1>
-      
-      <ul class="game-display" data-gamedisplay="false">
-        <li data-newgame="true">New Game</li>
-        <li data-savedata="0" data-maxdata="3">Load Game</li>
-        <li data-game>Options</li>
-        <li data-gamedisplay="false">Feature Mode</li>
-      </ul>
+      {{define:true}}
     </menu>
     
-    <section wmc class="game-display" data-wmc-label='display' data-wmc-type="">  
-    </section>
-    
-    <section wmc class="wmc login-user" data-wmc-logdata="" data-wmc-gamedisplay="false">
-      <form method="post" data-action="">
-        <input type="text" value="Enter Username"> <br>
-        <input type="password" label="Enter Password"> <br>
-        <input type="password" label="Confirm Password"> <br>
-        <button type="submit">Submit</button>
-      </form>
+    <section wmc class="wmc-game-display" data-wmc-label='display' data-wmc-type="start-game">
+      {{define:true}}
     </section>
     
     <section wmc class="wmc-login" data-wmc-label="form" data-wmc-type="login">
