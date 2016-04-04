@@ -570,6 +570,7 @@
           attr = attributes,
           settings = html.innerText;
           
+      renderTemplate.innerHTML = "" + "" + "" + "";
       
     },
     // UI Login
