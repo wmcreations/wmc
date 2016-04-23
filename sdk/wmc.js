@@ -268,6 +268,42 @@
         console.debug('----WMC---- function: ', lookupFn);
       }
       return;
+    },
+    
+    game: function(event, a) {
+       
+       a = {
+         
+         actions: function(event, a) {
+        
+          a = {
+            moveRight: function(event){
+          
+            },
+            moveLeft: function(event){
+              
+            },
+            moveUp: function(event){
+              
+            },
+            moveDown: function(event){
+              
+            },
+            pause: function(event){
+              
+            }
+          }
+          this.config = function(event, settings){
+            
+          }
+          return a, this;
+        }
+      }
+      this.config = function(event, settings){
+        
+      }
+      return a, this;
+      
     }
     
   };
@@ -547,7 +583,6 @@
           attr = attributes,
           settings = renderTemplate.innerText;
           
-    
       var labels = {
         start: "Press Any Key to Start Game",
         newGame: "New Game",

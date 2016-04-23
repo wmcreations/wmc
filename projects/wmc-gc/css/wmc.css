@@ -1,0 +1,23 @@
+html {
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 33.333%;
+  background-color: rgba(0,0,0,0.6);
+}
+
+.wmc-game-display {
+  display: block;
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 33.3333%;
+  box-sizing: border-box;
+}
+
+.wmc-start{
+  
+}
