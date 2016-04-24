@@ -1,13 +1,13 @@
 ﻿// Walandio Martian Creation - SDK
-// Version 0.0.6
+// Version 0.0.7
 // Web Game App SDK -
 // @ Developer: walandio, martian
 // 
 // Features:
-//  - Easy creating and defining functions in Object Array
-//  - Created Log System for Mapping Functions: which allows to check the functions created by WMC 
-//  - Lots of Choices for developer to customize functions
-//  - Improved securing the scope functions by not exposing publicly
+//  - 
+//  - 
+//  - 
+//  - 
 //  - 
 //  - 
 //  - 
@@ -270,41 +270,35 @@
       return;
     },
     
-    game: function(event, a) {
-       
-       a = {
-         
-         actions: function(event, a) {
-        
-          a = {
-            moveRight: function(event){
-          
-            },
-            moveLeft: function(event){
-              
-            },
-            moveUp: function(event){
-              
-            },
-            moveDown: function(event){
-              
-            },
-            pause: function(event){
-              
+    game: (function(a) {
+        this.actions = function(event, t) {
+          this.config = function(event, settings){ };
+          if(typeof t === 'undefined' && typeof event === 'undefined') {
+            return a = {
+                moveRight: function(event){ 
+                  // [Native Code]
+                },
+                moveLeft: function(event){
+                  // [Native Code]
+                 },
+                moveUp: function(event){
+                  // [Native Code]
+                 },
+                moveDown: function(event){
+                  // [Native Code]
+                 },
+                pause: function(event){
+                  // [Native Code]
+                 }
             }
           }
-          this.config = function(event, settings){
-            
+          if(t !== undefined && t.settings === 'on'){
+            return this;
           }
-          return a, this;
+          
         }
-      }
-      this.config = function(event, settings){
-        
-      }
-      return a, this;
-      
-    }
+        return this;
+    })(event)
     
   };
   
@@ -444,6 +438,9 @@
       }
     },
     template: function(flags, event){
+      var htmlShowEach, templateAttrbCheck, callTemplateEnabler, htmlChildren,
+          htmlAttributes, htmlNodeName, htmlNodeDataSets, wmcLabel, wmcType;
+          
       flags = flags || {};
       // Check window type if parent or self
       var win = (window.self == window.parent) ? parent  : self ,
@@ -754,10 +751,10 @@
   //
   //
   
-  // Checks once the uers is logged in and then disable login function
+  // Checks once the user is logged in and then disable login function
   if('login' in window){
-    if(addEventListener){
-      login.addEventListener('message', function(){
+    if(window.addEventListener){
+      window.addEventListener('message', function(){
         console.debug('Complete login datbase');
         console.debug('Deleting Function');
         
@@ -788,6 +785,7 @@
   window['player'] = api.player;
   window['testStorage'] = storage;
   window['ui'] = ui;
+  window['gameActions'] = fn.game;
   
 })(window.self === window.parent ? parent : window , ['','WMCjs','WMCAsync'], undefined)
 
