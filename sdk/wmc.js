@@ -369,12 +369,12 @@
     deck: function(){
       // API Call - deck.json
       alert('Choose your deck!');
-      var ws = 'ws://localhost:29330/projects/martiangame-cg-grand-celestials/data/deck.json';
+      var ws = 'ws://localhost:29330/projects/wmc-gc/data/deck.json';
     },
     hero: function(){
       // API Call - hero.json
       alert('Choose you hero!');
-      var ws = 'ws://localhost:29330/projects/martiangame-cg-grand-celestials/data/hero.json';
+      var ws = 'ws://localhost:29330/projects/wmc-gc/data/hero.json';
     },
     // Websocket Connection Server Data
     ws: function(host, event){
@@ -382,19 +382,29 @@
     },
     // Long polling AJAX Connection Server Data
     get: function(host, data, event){
-      return {
-        forms: {
-          settings: {
-            
-          }
-        },
-        data: function(projects, source){
-          var name = projects;
-          return{
-            
-          }
-        }
+      host = host || {};
+      data = data || {};
+      console.debug(host);
+      console.debug(data);
+      if(typeof host != 'undefined'){ 
+        console.debug(host);  
       }
+      if(typeof host === 'undefined' && typeof data == 'undefined' && typeof event === 'undefined'){
+          return {
+            forms: {
+              settings: {
+                
+              }
+            },
+            data: function(projects, source){
+              var name = projects;
+              return{
+                
+              }
+            }
+          }
+      }
+      
     },
     // Sending message for WMC Message Listener
     postMessage: function(data, event){
@@ -418,6 +428,23 @@
         
       }
       return userData;
+    },
+    
+    // Data
+    data: function(event, data){
+      if(typeof data === 'undefined' && typeof event === 'undefined'){
+        var dataCollection = {}; dataCollection.loc = 'data/';
+        dataCollection = {
+          game: dataCollection.loc + 'game.json',
+          deck: dataCollection.loc +'deck.json',
+          environment: dataCollection.loc +'environment.json',
+          quests: dataCollection.loc +'quests.json',
+          user: dataCollection.loc +'user.json',
+        }
+        console.debug(dataCollection);
+        // data = api.get(dataCollection);
+      }
+      
     }
   };
   
@@ -450,17 +477,17 @@
       
       // Checking all HTML elements
       for(var chck = 0; chck < htmlAllCollection.length; chck++){
-        var htmlShowEach = htmlAllCollection[chck];
+        htmlShowEach = htmlAllCollection[chck];
         if((htmlShowEach.length != -1)){
-         var templateAttrbCheck = htmlShowEach.attributes;
-         var callTemplateEnabler = ui.templateEnable(templateAttrbCheck);
+         templateAttrbCheck = htmlShowEach.attributes;
+         callTemplateEnabler = ui.templateEnable(templateAttrbCheck);
          console.debug(callTemplateEnabler);
          if(callTemplateEnabler == 'off'){ alert('Template disabled.'); return true;}
-         var htmlChildren = htmlShowEach.children;
+         htmlChildren = htmlShowEach.children;
          for(var x = 0; x < htmlChildren.length; x++){
-           var htmlAttributes = htmlChildren[x].attributes;
+           htmlAttributes = htmlChildren[x].attributes;
            for(var y = 0; y < htmlAttributes.length; y++){
-             var htmlNodeName = htmlAttributes[y].nodeName;
+             htmlNodeName = htmlAttributes[y].nodeName;
              if((htmlNodeName === nodeName)){
               // -- IMPORTANT -- 
               // WMC attribute must be evaluated of each HTML element. 
@@ -477,8 +504,8 @@
                   
                   console.debug("Templating... \nLabel:"+htmlNodeDataSets['wmcLabel']+"\nType:"+htmlNodeDataSets['wmcType']);
                   
-                  var wmcLabel = htmlNodeDataSets['wmcLabel'];
-                  var wmcType = htmlNodeDataSets['wmcType'];
+                  wmcLabel = htmlNodeDataSets['wmcLabel'];
+                  wmcType = htmlNodeDataSets['wmcType'];
                   
                   switch(wmcLabel){
                     case 'form':
@@ -786,8 +813,8 @@
   window['testStorage'] = storage;
   window['ui'] = ui;
   window['gameActions'] = fn.game;
-  
-})(window.self === window.parent ? parent : window , ['','WMCjs','WMCAsync'], undefined)
+  window.dataCollection = api.data;
+})(window.self === window.parent ? window.parent : window , ['','WMCjs','WMCAsync'], undefined)
 
 
 
