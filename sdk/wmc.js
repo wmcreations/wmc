@@ -1,31 +1,69 @@
 ﻿// Walandio Martian Creation - SDK
-// Version 0.0.7
+// Version 0.0.8
 // Web Game App SDK -
 // @ Developer: walandio, martian
 // 
 // Features:
-//  - 
-//  - 
-//  - 
+//  - Added WMCType functionality
+//  - Added API functionality
+//  - Added API responses to parameters
+//  - Added strict mode
 //  - 
 //  - 
 //  - 
 //  - 
 
-(function(WMC, modules, undefined, document){
-  var synced = false, defineWMC = {};
-  modules = modules;
-  WMC = WMC || {};
-  
-  for(var m = 1; m <= modules.length; m++){
-    var modName = (typeof modules[m] != 'undefined') ?  modules[m] : null;
-    WMC[modName];
-    (modName in window) ? console.debug('Synced Module..', modName) : console.debug('Module still syncing...');
-    (m === modules.length) ? [console.debug('WMC SDK Completely Synced!'), synced = true] : [console.debug("WMC syncing to SDK...", modName)];
+// WMC Predefined Settings
+(function (define, WMCType, undefined, document, isStrict) { isStrict;
+
+  var href = define.location.href
+  var settings = {
+    WMC: true,
+    WMCType: {
+      api: href.includes('api'),
+      modules: href.includes('wmc')
+    }
   }
   
-  this.WMCjs = {};
+  // Initialize WMC Type
+  WMCType(settings, define);
   
+})( (self || window || this), function(settings, w){
+
+  function checkType(type, value) {
+      w.SDKType = type;
+  }
+  
+  if (settings.WMC === true){
+    w['WMC'] = true;
+    for (var m in settings) {
+      if (m === 'WMCType'){
+          var value = settings[m];
+          for (var isTypeOf in value) {
+              if (isTypeOf === 'api' && value[isTypeOf] === true) {
+                return checkType(isTypeOf, value[isTypeOf]);  
+              }
+              if (isTypeOf === 'modules' && value[isTypeOf] === true) {
+                return checkType(isTypeOf, value[isTypeOf]);
+              }
+          }
+      }
+    } 
+  }
+  
+}, undefined, document, "use strict");
+
+// WMC SDK - Intialization
+(function(WMC, modules, undefined, document, isStrict){ isStrict;
+
+  WMC.synced = false, 
+  defineWMC = {};
+  
+  // Initialize modules
+  modules( 'WMCjs', ['','WMCjs','WMCAsync'], WMC);
+  
+  // Complete Synchronization
+  this.WMCjs = {};
   if(synced === true){
     WMCjs = function(connection){
       if(typeof connection === 'string' && connection === 'open'){
@@ -216,16 +254,16 @@
   
   // ---------------------------- Websocket Connection -------------------------------
   
-  if('WebSocket' in window){
-    try{
-      var url = api;
-      var ws = new WebSocket();
+  // if('WebSocket' in window){
+  //   try{
+  //     var url = api;
+  //     var ws = new WebSocket();
       
-    } catch (error) {
-      console.debug(error);
-      console.debug('Websocket cannot connect at the moment. Closing connection...');
-    }
-  }
+  //   } catch (error) {
+  //     console.debug(error);
+  //     console.debug('Websocket cannot connect at the moment. Closing connection...');
+  //   }
+  // }
   
   // ---------------------------- Start Modular --------------------------------------
   var fn = {},
@@ -313,32 +351,34 @@
       }
     },
     callDataFunc: function(data, ws, config, callback){
-      ws = 'ws://' + ws;
-      // console.debug(data);
-      if('WebSocket' in window){
-        alert('Websocket!');
-        var socket = new WebSocket(ws);
+      // ws = 'ws://' + ws;
+      // // console.debug(data);
+      // if('WebSocket' in window){
+      //   alert('Websocket!');
+      //   var socket = new WebSocket(ws);
         
-        socket.onopen = function(event) {
-          console.debug('Open message');
-          alert('Open Message');
-        }
+      //   socket.onopen = function(event) {
+      //     console.debug('Open message');
+      //     alert('Open Message');
+      //   }
         
-        socket.onmessage = function(event) {
-          console.debug('Sending message');
-          alert('Sending message');
-        }
+      //   socket.onmessage = function(event) {
+      //     console.debug('Sending message');
+      //     alert('Sending message');
+      //   }
         
-        socket.onclose = function(event) {
-          console.debug('Close message!');
-          alert('Close message');
-        }
+      //   socket.onclose = function(event) {
+      //     console.debug('Close message!');
+      //     alert('Close message');
+      //   }
         
-        socket.onerror = function(event) {
-          console.debug('Error sending message');
-          alert('Error sending message');
-        }
-      }
+      //   socket.onerror = function(event) {
+      //     console.debug('Error sending message');
+      //     alert('Error sending message');
+      //   }
+      // }
+      
+      
     },
     callback: function(serverName){
       for(var checkpoint in api.environment){
@@ -809,12 +849,48 @@
   
   // window['testsrvr'] = api.server;
   // window['env'] = api.environment;
-  window['player'] = api.player;
-  window['testStorage'] = storage;
-  window['ui'] = ui;
-  window['gameActions'] = fn.game;
-  window.dataCollection = api.data;
-})(window.self === window.parent ? window.parent : window , ['','WMCjs','WMCAsync'], undefined)
+  // window['player'] = api.player;
+  // window['testStorage'] = storage;
+  // window['ui'] = ui;
+  // window['gameActions'] = fn.game;
+  // window.dataCollection = api.data;
+}).apply(null,
+
+  // Enable API if TRUE
+  WMC === true && SDKType === 'api' ?
+  [ (self || window || this), 
+    function(state, api) {
+      
+      return (self||window||this)[state] = api;
+    }, 
+    undefined, 
+    document, 
+  "use strict"] :
+  
+  // Enable MODULES if TRUE
+  WMC === true && SDKType === 'modules' ?
+  [ (self || window || this), 
+    function(state, modules, WMC) {
+      var SDK = state === 'WMCjs';
+      if (!SDK) { throw("Cannot open SDKjs.. Please try again..") };
+      
+      for(var m = 1; m <= modules.length; m++){
+        var modName = (typeof modules[m] != 'undefined') ?  modules[m] : null;
+        WMC[modName];
+        (modName in window) ? console.debug('Synced Module..', modName) : console.debug('Module still syncing...');
+        (m === modules.length) ? [console.debug('WMC SDK Completely Synced!'), synced = true] : [console.debug("WMC syncing to SDK...", modName)];
+      }
+      
+    }, 
+    undefined, 
+    document, 
+  "use strict"] :
+  
+  [('')]
+  
+)
+
+//(window.self === window.parent ? window.parent : window , ['','WMCjs','WMCAsync'], undefined)
 
 
 
