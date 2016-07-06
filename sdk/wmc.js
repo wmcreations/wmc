@@ -1,5 +1,5 @@
 ﻿// Walandio Martian Creation - SDK
-// Version 0.0.8
+// Version 0.0.9
 // Web Game App SDK -
 // @ Developer: walandio, martian
 // 
@@ -29,18 +29,19 @@
   WMCType(settings, define);
   
 })( (self || window || this), function(settings, w){
+  const isWMC = settings.WMC;
 
-  function checkType(type, value) {
+  function checkType (type, value) {
       w.SDKType = type;
   }
-  
-  if (settings.WMC === true){
-    w['WMC'] = true;
+
+  function WMCType (settings) {
     for (var m in settings) {
-      if (m === 'WMCType'){
+      if (m === 'WMCType') {
           var value = settings[m];
           for (var isTypeOf in value) {
               if (isTypeOf === 'api' && value[isTypeOf] === true) {
+                loaderAPI(document, 'api.js', 'wmc-api', true)
                 return checkType(isTypeOf, value[isTypeOf]);  
               }
               if (isTypeOf === 'modules' && value[isTypeOf] === true) {
@@ -48,13 +49,27 @@
               }
           }
       }
-    } 
+    }
+  }
+
+  function loaderAPI (d, s, id, async) {
+    var doc = d,
+        el = doc.createElement('script');
+    
+    el.src = s;
+    el.id = id;
+    return d.head.appendChild(el);
+  }
+  
+  if (isWMC) {
+    w.WMC = true;
+    WMCType(settings);
   }
   
 }, undefined, document, "use strict");
 
 // WMC SDK - Intialization
-(function(WMC, modules, undefined, document, isStrict){ isStrict;
+(function (WMC, modules, undefined, document, isStrict) { isStrict;
 
   WMC.synced = false, 
   defineWMC = {};
@@ -65,15 +80,15 @@
   // Complete Synchronization
   this.WMCjs = {};
   if(synced === true){
-    WMCjs = function(connection){
+    WMCjs = function(connection) {
       if(typeof connection === 'string' && connection === 'open'){
         this.defineFn = defineWMC;
         return this;
       } 
-      else if (connection === ''){
+      else if (connection === '') {
         return console.debug('WMC JS closing now...');
       }
-      else if (connection === null){
+      else if (connection === null) {
         return console.debug('WMC JS closing now...');
       }
     }
@@ -313,16 +328,16 @@
           this.config = function(event, settings){ };
           if(typeof t === 'undefined' && typeof event === 'undefined') {
             return a = {
-                moveRight: function(event){ 
+                moveRight: function (event) { 
                   // [Native Code]
                 },
-                moveLeft: function(event){
+                moveLeft: function (event) {
                   // [Native Code]
                  },
-                moveUp: function(event){
+                moveUp: function (event) {
                   // [Native Code]
                  },
-                moveDown: function(event){
+                moveDown: function (event) {
                   // [Native Code]
                  },
                 pause: function(event){
@@ -336,21 +351,21 @@
           
         }
         return this;
-    })(event)
+    })()
     
   };
   
   // Modular API
   api = {
     
-    path: function( windowType ,event){
+    path: function ( windowType ,event) {
       if(typeof windowType === 'undefined' || windowType === '' ){ 
         return windowType = (window.parent) ? parent : self ;  
       } else {
         return windowType = windowType;
       }
     },
-    callDataFunc: function(data, ws, config, callback){
+    callDataFunc: function (data, ws, config, callback) {
       // ws = 'ws://' + ws;
       // // console.debug(data);
       // if('WebSocket' in window){
@@ -380,7 +395,7 @@
       
       
     },
-    callback: function(serverName){
+    callback: function (serverName) {
       for(var checkpoint in api.environment){
         if(serverName === checkpoint){
           api.server(serverName);
@@ -404,7 +419,7 @@
         }
       })();
       
-      if(env){ return this; }
+      if (env) { return this; }
     },
     deck: function(){
       // API Call - deck.json
@@ -426,17 +441,17 @@
       data = data || {};
       console.debug(host);
       console.debug(data);
-      if(typeof host != 'undefined'){ 
+      if (typeof host != 'undefined') { 
         console.debug(host);  
       }
-      if(typeof host === 'undefined' && typeof data == 'undefined' && typeof event === 'undefined'){
+      if (typeof host === 'undefined' && typeof data == 'undefined' && typeof event === 'undefined') {
           return {
             forms: {
               settings: {
                 
               }
             },
-            data: function(projects, source){
+            data: function (projects, source) {
               var name = projects;
               return{
                 
@@ -447,20 +462,20 @@
       
     },
     // Sending message for WMC Message Listener
-    postMessage: function(data, event){
+    postMessage: function (data, event) {
       
     },
     // This is you server environment
     // Note: This is required to login and searches it. If it does not exist,
     // the user will be notified to try to connect on a different server.
-    environment: function(data, event){
+    environment: function (data, event) {
       
       var env = api.get(host, data, event);
       return env;
     },
     
     // Player's Stats
-    player: function(userData){
+    player: function (userData) {
       userData = userData || {};
       userData = {
         userName: api.user,
@@ -471,8 +486,8 @@
     },
     
     // Data
-    data: function(event, data){
-      if(typeof data === 'undefined' && typeof event === 'undefined'){
+    data: function (event, data) {
+      if (typeof data === 'undefined' && typeof event === 'undefined') {
         var dataCollection = {}; dataCollection.loc = 'data/';
         dataCollection = {
           game: dataCollection.loc + 'game.json',
@@ -773,11 +788,11 @@
     // ---------------
     
     // Different Modes
-    storyMode: function(){
+    storyMode: function() {
       
     },
     // ------- This is the Battle Ground Tournament
-    BGTMode: function(){
+    BGTMode: function() {
       
     },
     
@@ -861,7 +876,7 @@
   [ (self || window || this), 
     function(state, api) {
       
-      return (self||window||this)[state] = api;
+      return (self||window||this)[state] = api; 
     }, 
     undefined, 
     document, 
