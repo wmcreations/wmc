@@ -1,0 +1,36 @@
+/* Game Board */
+.wmc-game-board {
+    display: block;
+    float: left;
+    width: 100%;
+    background-color: #333;
+}
+
+.wmc-game-board,
+.wmc-game-board >  p,
+.wmc-game-board >  h1 {
+    color: #fff;
+    text-align: center;
+}
+.wmc-box {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #fff !important;
+    margin-right: 10px;
+}
+.wmc-message {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    height: 50px;
+    border: 1px solid #fff;
+}
+/* Animation */
+
+
+/* Notifications */
+.wmc-alert {
+    display: block;
+}

@@ -10,13 +10,13 @@
         apiHash: "#!",
         apiLocation: window.location,
         apiHref: function () {
-          return rq.apiLocation.href
+          return this.apiLocation.href
         },
         apiRep: function (v) {
           return (v.href).match('#!');
         },
         apiHost: function() {
-          return rq.apiLocation
+          return this.apiLocation
         },
         callbackType: (function (ct) {
           var isAPI = ct.includes(this.name);
@@ -26,7 +26,7 @@
 
         codeHash: function (v) {
           var u = v.href,
-              m = rq.apiRep(v),
+              m = this.apiRep(v),
               h = (v.hash) ? (v.hash).match('#!') : '#!',
               keygen, val;
 
