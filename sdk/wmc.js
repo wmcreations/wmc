@@ -2,16 +2,16 @@
 // Version 0.0.9
 // Web Game App SDK -
 // @ Developer: walandio, martian
-// 
+//
 // Features:
 //  - Added WMCType functionality
 //  - Added API functionality
 //  - Added API responses to parameters
 //  - Added strict mode
-//  - 
-//  - 
-//  - 
-//  - 
+//  -
+//  -
+//  -
+//  -
 
 // WMC Predefined Settings
 (function (define, WMCType, undefined, document, isStrict) {
@@ -27,7 +27,7 @@
           modules: (function () { return { modules: true } })(),
           init: function () {
             var href = this.path;
-            if (href.includes('api')) return this.api; else return this.modules; 
+            if (href.includes('api')) return this.api; else return this.modules;
           }
         }
         return new MainType(path_href);
@@ -218,16 +218,24 @@
 
                 // Checks the function from API Environment to load
                 if (api.hasOwnProperty(val)) {
-                  deferfn.fn({ 
+                  deferfn.fn({
                     type: "api",
                     list: {
                       environment: true,
                       data: true
                     }
-                  }, val);
+                  }, val)
+                  // deferfn.fn({
+                  //   type: "api",
+                  //   list: {
+                  //     environment: true,
+                  //     data: true
+                  //   }
+                  // }, val);
+
                   if (val === 'environment') { return false; }
                   if (val === 'data' && val === '') { return false; }
-                  
+
                   api[val].call(this, callbackFn);
                 }
 
@@ -270,7 +278,7 @@
       // Settings for nameFn
       var isDemo = /^[D|d](emo)/ig;
       var isDB = /^[D|d](atabase)/ig;
-  
+
       // -- Database Config --
       // Example for settings format
       // { db:'open', dbName:'game.json'}
@@ -587,8 +595,8 @@
                 for (var y = 0; y < htmlAttributes.length; y++) {
                   htmlNodeName = htmlAttributes[y].nodeName;
                   if ((htmlNodeName === nodeName)) {
-                    // -- IMPORTANT -- 
-                    // WMC attribute must be evaluated of each HTML element. 
+                    // -- IMPORTANT --
+                    // WMC attribute must be evaluated of each HTML element.
                     // This is the first priority before proceeding.
                     // Once it is passed, it then checks other WMC's HTML rules
                     // ---------------
@@ -659,7 +667,7 @@
                         case 'modes':
 
                           if (wmcType === 'story-mode') {
-                            
+
                           }
                           if (wmcType === 'extra-mode') {
 
@@ -807,7 +815,7 @@
         "<button type='submit' class='wmc-login btn-submit'>login</button>" +
         "</form>";
     },
-    // UI Redeem    
+    // UI Redeem
     redeem: function () {
 
     },
@@ -910,7 +918,7 @@
       var options = {};
       // Stricted to Private
       function event() {
-        
+
       }
 
       return options = {
@@ -997,7 +1005,7 @@
               return options = {
                 gameboard: function (obj) {
                   obj = obj || {};
-                  
+
                   let styles = {
                     height: options.status.height + "px"
                   }
@@ -1009,7 +1017,7 @@
 
                       document.body.innerHTML = "";
                       document.body.appendChild(board);
-                  
+
                   return board;
                 },
                 element: function (obj) {
@@ -1058,9 +1066,9 @@
               this.elementCreated.classList.remove(name)
             },
             render: function () {
-              
+
             }
-            
+
           }
         },
         init: function () {
@@ -1088,7 +1096,7 @@
         var game = app.gameBoard();
         var boardGame = game.create('gameboard').addText('Game Start','h1');
             // game.addClass('wmc-game-board');
-            
+
             // game.create('function').triggers({
             // })
 
@@ -1099,7 +1107,7 @@
         var trigger = {};
             // console.debug('check this start button -->', startButton);
             // win.addEventListener('resize', trigger.resize);
-            
+
 
         trigger = {
           click: function (e) {
@@ -1133,13 +1141,13 @@
                }
 
            var newBoard = document.querySelector('.wmc-game-board');
-          
+
            shape.box(object);
            this.elemClass(object).add('wmc-box');
            newBoard.appendChild(object);
-           
+
            this.events(object);
-          
+
           //  console.debug('created box element -->', box);
           //  box.transform('box', {});
           //  box.render();
@@ -1164,7 +1172,7 @@
             obj = obj;
             // Box Events
             obj.addEventListener('click', this.actions);
-            
+
           },
           actions: function () {
             alert('Box Destroyed!');
@@ -1172,11 +1180,11 @@
             let note = document.createElement('section');
             let noteText = document.createTextNode(labels.message);
                 note.appendChild(noteText);
-            
+
             let board = document.querySelector('.wmc-game-board');
             board.appendChild(note);
             trigger.elemClass(note).add('wmc-message');
-            
+
             let checkMsg = document.querySelectorAll('.wmc-message');
             if (checkMsg.length > 1) {
               note.remove();
@@ -1184,17 +1192,17 @@
 
             let box = document.querySelector('.wmc-box');
             box.remove();
-            
+
             trigger.init();
 
             let animation;
-            
+
           }
         }
 
         ui = {
           animate: function(element, type) {
-            
+
             var animate;
 
             animate = {
@@ -1219,7 +1227,7 @@
 
         startButton.addEventListener('click', trigger.click);
 
-        
+
 
       }
     }
@@ -1295,41 +1303,33 @@
         undefined,
         document,
         "use strict",
-        function() {
-          var defer;
+        (function() {
+          var deferral;
 
           deferral = (function(){
-            
+
             function defer(){
               this.name = this.name;
             }
 
             defer.prototype = {
               fn: function(opts, val){
-                for (var i in opts.type) {
-                  for (var l in opts.list) {
-                    if ([opts.type].hasOwnProperty()) {
-                      return false;
-                    }
-                  }
-                }
+                this[opts.type].call(this, opts, val);
               },
               api: function(opts, val) {
-                for (var i in window[opts.type]) {
-                  
-                }
+                  console.debug('check this to defer api list -->', val + "-->" + opts.list[val]);
+                  if (opts.list.hasOwnProperty(val) && opts.list[val] === true) {  return false }
               },
               ui: function(opts, val) {
-
+                  console.debug('check this to defer ui list', val + "-->" + opts.list[val]);
+                  if (opts.list.hasOwnProperty(val) && opts.list[val] === true) { return false; }
               }
-              
             }
-
-            return defer;
+            return new defer;
           })();
 
-          return deferral;          
-        }] :
+          return deferral;
+        })(this || window|| self)] :
 
       [('')]
 
