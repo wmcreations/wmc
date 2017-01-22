@@ -28,7 +28,32 @@
     border: 1px solid #fff;
 }
 /* Animation */
+.wmc-box[data-anim-*] {
+    display: none;
+    background-color: #c3c3c3;
+    position: absolute;
+    width: 70%;
+    height: 500px;
+    animation-name: box_animation;
+    animation-duration: 4s;
+}
 
+.wmc-box[data-anim-color="fadein"] {
+    display: none;
+    background-color: #c3c3c3;
+    animation-name: color_animation;
+    animation-duration: 4s;
+}
+
+@keyframes box_animation {
+    0% { display: none; }
+    50% { display: block;}
+}
+
+@keyframes color_animation {
+    0% { background-color: #c3c3c3;}
+    50% { background-color: limecolor; }
+}
 
 /* Notifications */
 .wmc-alert {
