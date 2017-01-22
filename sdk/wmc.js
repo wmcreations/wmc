@@ -77,7 +77,7 @@
 }, undefined, document, "use strict");
 
 // WMC SDK - Intialization
-(function (WMC, modules, undefined, document, isStrict) {
+(function (WMC, modules, undefined, document, isStrict, deferfn) {
   isStrict;
 
   WMC.synced = false,
@@ -204,6 +204,7 @@
           console.debug('This is load function');
           window[define] = function (dfn, opts, callbackFn) {
             opts = {};
+
             if (callbackFn instanceof Function === false) { callbackFn = callbackFn; }
 
             if (typeof dfn === 'object' && callbackFn instanceof Function === false) {
@@ -211,14 +212,23 @@
                 console.debug(val);
 
                 // Checks the function from UI to load
-                if (val in ui) {
+                if (ui.hasOwnProperty(val)) {
                   ui[val].call(this);
                 }
 
                 // Checks the function from API Environment to load
-                if (val in api) {
+                if (api.hasOwnProperty(val)) {
+                  deferfn.fn({ 
+                    type: "api",
+                    list: {
+                      environment: true,
+                      data: true
+                    }
+                  }, val);
                   if (val === 'environment') { return false; }
-                  api[val].call(this);
+                  if (val === 'data' && val === '') { return false; }
+                  
+                  api[val].call(this, callbackFn);
                 }
 
               });
@@ -256,6 +266,7 @@
     this.custom = function (func) { (typeof func === 'function') ? func.call(this) : console.debug('Error calling function or method', func); }
     this.config = function (nameFn, settings) {
       nameFn = nameFn;
+      settings = settings;
       // Settings for nameFn
       var isDemo = /^[D|d](emo)/ig;
       var isDB = /^[D|d](atabase)/ig;
@@ -305,18 +316,23 @@
   fn = {
 
     engine: {
+      // Work in progress
       start: function (apiName, apiCall) {
         apiCall = apiCall || '';
         apiName.call(this);
         console.debug('Working function');
       },
+      // Work in progress
       end: function () {
       },
+      // Work in progress
       error: function (err) {
       },
+      // Work in progress
       after: function (fn) {
         return fn();
       },
+      // Work in progress
       init: function () {
       }
     },
@@ -372,7 +388,10 @@
 
   // Modular API
   api = {
-
+    create_api: function(name, callback) {
+      if (!api.hasOwnProperty(name)) return api[name] = callback;
+      else console.error('Function name created already exists.');
+    },
     path: function (url, callback, event) { },
     callDataFunc: function (data, ws, config, callback) {
       // ws = 'ws://' + ws;
@@ -446,23 +465,24 @@
 
     },
     // Long polling AJAX Connection Server Data
-    get: function (data, event) {
+    get: function (d, event) {
       // Load jQuery and use AJAX callback
-      data = data || {};
-      console.debug(host);
-      console.debug(data);
-      if (typeof host != 'undefined') {
-        console.debug(host);
-      }
-      
-      return {
-        forms: {
-          settings: {}
-        },
-        data: function (projects, source) {
-          var name = projects;
-          return {}
-        }
+      d = d || {}, g = {}, fn = api.get;
+      var method_type = fn.name;
+      console.debug('Check this method_type -->', method_type);
+
+      if ('jQuery' in window) {
+        jQuery.ajax({
+          method: method_type,
+          data: d,
+          success: function(d) {
+            console.debug('Retrieving Data Success! -->', d);
+            return d;
+          },
+          error: function(e) {
+            console.debug('Retrieving Data Failed! -->', e);
+          }
+        })
       }
 
     },
@@ -491,39 +511,35 @@
     },
 
     // Data
-    data: function (event, data) {
-      if (typeof data === 'undefined' && typeof event === 'undefined') {
-        var dataCollection = {};
-        var _this = dataCollection;
-        dataCollection = {
-          loc: 'data/',
-          game: _this.loc + 'game.json',
-          deck: _this.loc + 'deck.json',
-          environment: _this.loc + 'environment.json',
-          quests: _this.loc + 'quests.json',
-          user: _this.loc + 'user.json',
-        }
-        console.debug(dataCollection);
-        // data = api.get(dataCollection);
+    data: function (event_name, data) {
+      // DC - Data Collection Event Handler
+      var dc = {}, event_handler = {};
+      event_name = event_name;
+
+      dc = {
+        loc: 'data/',
+        "game": dc.loc + 'game.json',
+        "deck": dc.loc + 'deck.json',
+        "environment": dc.loc + 'environment.json',
+        "quests": dc.loc + 'quests.json',
+        "user": dc.loc + 'user.json',
       }
 
-      switch (event) {
-        case 'get':
-          // Get data
-        break;
-        case 'post':
-          // Post data
-        break;
-
-        default:
-        break;
-        
+      event_handler = {
+        get: api.get(dc[data]),
+        post: api.post(dc[data]),
+        put: api.put(dc[data]),
+        search: api.search(dc[data])
       }
 
+      console.debug('Check event_handlers -->', event_handler);
+      return event_handler[event_name];
     }
   };
 
+  // -----------
   // Modular UI
+  // -----------
   ui = {
 
     // WMC HTML Template
@@ -643,7 +659,7 @@
                         case 'modes':
 
                           if (wmcType === 'story-mode') {
-
+                            
                           }
                           if (wmcType === 'extra-mode') {
 
@@ -722,18 +738,20 @@
     // UI Login
     login: function (data, attributes, element, event) {
       var renderTemplate = element,
-        attr = attributes,
-        usrInput = ui.create("input"),
-        pwdInput = ui.create("input"),
-        confirmPwdInput = ui.create("input"),
-        div = ui.create("div"),
-        br = "br",
-        span = ui.create("span"),
-        settings = renderTemplate.innerText;
+          attr = attributes,
+          usrInput = ui.create("input"),
+          pwdInput = ui.create("input"),
+          confirmPwdInput = ui.create("input"),
+          div = ui.create("div"),
+          br = "br",
+          span = ui.create("span"),
+          regexp = /({{}})/ig,
+          settings = renderTemplate.innerText;
 
-      var loginInfo = settings.split('{{');
+
+      var config = settings.split(regexp);
       // console.debug(settings);
-      // console.debug(loginInfo);
+      console.debug(config);
 
       // JS Code -- Longer Approach: Slow Performance
       // *****************************************************
@@ -794,6 +812,7 @@
 
     },
     // UI Events
+    // Work in progrees
     events: function (event, triggerFn) {
 
       if (event) {
@@ -1275,7 +1294,42 @@
         },
         undefined,
         document,
-        "use strict"] :
+        "use strict",
+        function() {
+          var defer;
+
+          deferral = (function(){
+            
+            function defer(){
+              this.name = this.name;
+            }
+
+            defer.prototype = {
+              fn: function(opts, val){
+                for (var i in opts.type) {
+                  for (var l in opts.list) {
+                    if ([opts.type].hasOwnProperty()) {
+                      return false;
+                    }
+                  }
+                }
+              },
+              api: function(opts, val) {
+                for (var i in window[opts.type]) {
+                  
+                }
+              },
+              ui: function(opts, val) {
+
+              }
+              
+            }
+
+            return defer;
+          })();
+
+          return deferral;          
+        }] :
 
       [('')]
 
