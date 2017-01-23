@@ -70,7 +70,8 @@
   }
 
   if (isWMC) {
-    w.WMC = true;
+    w.WMC = {};
+    w.WMC.status = true;
     WMCType(settings);
   }
 
@@ -106,6 +107,10 @@
   // Give function a definition to start creating that function
   defineWMC = function (createFn, args, bool) {
     var define = createFn || {}, dfnEach, defineFunctions;
+    // Validate WMC === true, then create overwrite WMC
+    if (WMC === true) {
+      this.WMC = {};
+    }
 
     dfnEach = function (dfnLists) {
       dfnLists = dfnLists;
@@ -131,8 +136,7 @@
             return this;
           }
 
-          // WMC functions is true
-          this.WMC = true;
+          this.WMC[define] = window[define];
           console.debug('Created function >>>', define);
           return;
 
@@ -158,7 +162,7 @@
           }
           console.debug('Created function >>>', define);
 
-          this.WMC = true;
+          this.WMC[define] = window[define];
           return this;
 
         case 'screen':
@@ -168,7 +172,7 @@
 
           }
 
-          this.WMC = true;
+          this.WMC[define] = window[define];
           return this;
 
         case 'server':
@@ -186,7 +190,7 @@
           }
           console.debug('Created function >>>', define);
 
-          this.WMC = true;
+          this.WMC[define] = window[define];
           return this;
 
         case 'mapFunctions':
@@ -195,7 +199,7 @@
           window[define] = fn.checkFuncs(args);
           if (typeof objects !== 'array') { return console.error('Could not map available WMC functions.') }
 
-          this.WMC = true;
+          this.WMC[define] = window[define];
           return this;
 
         case 'load':
@@ -218,31 +222,23 @@
 
                 // Checks the function from API Environment to load
                 if (api.hasOwnProperty(val)) {
-                  deferfn.fn({
+                  var _api, _ui;
+                  _api = {
                     type: "api",
                     list: {
                       environment: true,
                       data: true
                     }
-                  }, val)
-                  // deferfn.fn({
-                  //   type: "api",
-                  //   list: {
-                  //     environment: true,
-                  //     data: true
-                  //   }
-                  // }, val);
-
-                  if (val === 'environment') { return false; }
-                  if (val === 'data' && val === '') { return false; }
-
+                  }
+                  console.debug('check this lists of api -->', api);
+                  deferfn.fn(_api, val);
                   api[val].call(this, callbackFn);
                 }
 
               });
 
               callbackFn = callbackFn;
-              this.WMC = true;
+              WMC[define] = window[define];
               return this;
             }
 
@@ -664,17 +660,17 @@
 
                           }
 
-                        case 'modes':
+                        // case 'modes':
 
-                          if (wmcType === 'story-mode') {
+                        //   if (wmcType === 'story-mode') {
 
-                          }
-                          if (wmcType === 'extra-mode') {
+                        //   }
+                        //   if (wmcType === 'extra-mode') {
 
-                          }
-                          if (wmcType === 'gallery-mode') {
+                        //   }
+                        //   if (wmcType === 'gallery-mode') {
 
-                          }
+                        //   }
 
                         default:
                           break;
@@ -850,11 +846,11 @@
     // ---------------
     // Core
     mode: (function(){
-      function mode(type){
+      function modes(type){
         this.type = type;
         alert('Mode: ' + typeof this.type);
       }
-      mode.prototype = {
+      modes.prototype = {
         select: function () {
           mode.prototype[this.type].call(this);
         },
@@ -867,12 +863,12 @@
           return 'BGT' || 'Battlegroung Tournament';
         }
       }
-    return new mode;
-    }()),
+    return new modes;
+    })(),
     // Mode Selectors
-    storyMode: ui.mode,
+    storyMode: function(mode){ ui.mode(mode) } ,
     // ------- This is the Battle Ground Tournament
-    BGTMode: ui.mode,
+    BGTMode: function(mode){ ui.mode(mode) } ,
 
     // Screen Settings
     screen: function (width, height, unit) {
@@ -1275,7 +1271,7 @@
 }).apply(null,
 
   // Enable API if TRUE
-  WMC === true && SDKType.hasOwnProperty('api') && SDKType.api ?
+  WMC.status === true && SDKType.hasOwnProperty('api') && SDKType.api ?
     [(self || window || this),
       function (state, api) {
 
@@ -1286,7 +1282,7 @@
       "use strict"] :
 
     // Enable MODULES if TRUE
-    WMC === true && SDKType.hasOwnProperty('modules') && SDKType.modules ?
+    WMC.status === true && SDKType.hasOwnProperty('modules') && SDKType.modules ?
       [(self || window || this),
         function (state, modules, WMC) {
           var SDK = state === 'WMCjs';
@@ -1317,12 +1313,19 @@
                 this[opts.type].call(this, opts, val);
               },
               api: function(opts, val) {
+                console.debug('check this val -->', val);
+                if (opts.list.hasOwnProperty(val) && opts.list[val] === true) {
                   console.debug('check this to defer api list -->', val + "-->" + opts.list[val]);
-                  if (opts.list.hasOwnProperty(val) && opts.list[val] === true) {  return false }
+                  return false;
+                }
               },
               ui: function(opts, val) {
-                  console.debug('check this to defer ui list', val + "-->" + opts.list[val]);
-                  if (opts.list.hasOwnProperty(val) && opts.list[val] === true) { return false; }
+                for (var l in ui) {
+                  if (opts.list.hasOwnProperty(val) && opts.list[val] === true) {
+                    console.debug('check this to defer ui list', val + "-->" + opts.list[val]);
+                    return false;
+                  }
+                }
               }
             }
             return new defer;

@@ -1,9 +1,9 @@
 // Async API Call
 (function (global, api, undefined, document){
- 
+
  var url = location;
  var rq = {};
- 
+
  rq = {
         apiName: "api",
         apiOrigin: "api/",
@@ -94,15 +94,15 @@
       }
 
  jq = {
-   
+
  }
 
 
  // http://localhost/api/
- // 
+ //
  // If Bible Data
  // hostname/api/#!/bible/
- // 
+ //
  // If Game Data - User
  // hostname/type/#!/game-project/user
 
@@ -110,14 +110,22 @@
  // hostname/type/#!/game-project/stat
 global.req = rq;
 
-}).apply(null, 
+}).apply(null,
 
 // Checks if API is valid and will get JSON and return its data to the page in JSON database
-WMC === true && SDKType === 'api' ?
+WMC.status === true && SDKType === 'api' ?
 
-[ window, 
+[ window,
   function(request, response) {
-     return (req);
+     var xhr = new XMLHttpRequest();
+     xhr.open("GET", request.url, true);
+     xhr.onload = function(e) {
+       console.debug('check this e for event -->', e);
+       console.debug('check status of this -->', this);
+       if (this.status == 200) {
+         WMC.db = this.responseText;
+       }
+     }
  },
   undefined,
   document,
@@ -125,10 +133,10 @@ WMC === true && SDKType === 'api' ?
 
 :
 
-WMC === false && SDKType === 'api' 
-[ window, 
+WMC.status === false && SDKType === 'api'
+[ window,
   function (url, param, string, func, event) {
-    
+
   },
   undefined,
   document,
