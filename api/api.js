@@ -19,10 +19,10 @@
           return this.apiLocation
         },
         callbackType: (function (ct) {
-          var isAPI = ct.includes(this.name);
+          var isAPI = ct;
               console.debug(isAPI);
               if (isAPI) { return 'api' };
-        })(SDKType),
+        })(WMC.SDKType.api),
 
         codeHash: function (v) {
           var u = v.href,
@@ -109,11 +109,12 @@
  // If Game Data - Stat
  // hostname/type/#!/game-project/stat
 global.req = rq;
+api({url:'.wmc-bible/book/genesis.json'});
 
 }).apply(null,
 
 // Checks if API is valid and will get JSON and return its data to the page in JSON database
-WMC.status === true && SDKType === 'api' ?
+WMC.status === true && WMC.SDKType.api ?
 
 [ window,
   function(request, response) {
@@ -123,9 +124,10 @@ WMC.status === true && SDKType === 'api' ?
        console.debug('check this e for event -->', e);
        console.debug('check status of this -->', this);
        if (this.status == 200) {
-         WMC.db = this.responseText;
+         WMC.db = JSON.parse(this.responseText);
        }
      }
+     xhr.send();
  },
   undefined,
   document,
@@ -133,7 +135,7 @@ WMC.status === true && SDKType === 'api' ?
 
 :
 
-WMC.status === false && SDKType === 'api'
+WMC.status === false && WMC.SDKType.api
 [ window,
   function (url, param, string, func, event) {
 

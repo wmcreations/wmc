@@ -1,26 +1,18 @@
 ﻿// Walandio Martian Creation - SDK
-// Version 0.0.9
+// Version 1.0.0
 // Web Game App SDK -
 // @ Developer: walandio, martian
 //
-// Features:
-//  - Added WMCType functionality
-//  - Added API functionality
-//  - Added API responses to parameters
-//  - Added strict mode
-//  -
-//  -
-//  -
-//  -
+
 
 // WMC Predefined Settings
 (function (define, WMCType, undefined, document, isStrict) {
   isStrict;
 
-  var path_href = define.location.href,
-      MainType = (function () {
-        function MainType (path) {
-          this.path = path;
+  var MainType = (function () {
+        function MainType() {
+          this.path = define.location.href;
+          return this.init();
         }
         MainType.prototype = {
           api: (function () { return { api: true } })(),
@@ -30,24 +22,31 @@
             if (href.includes('api')) return this.api; else return this.modules;
           }
         }
-        return new MainType(path_href);
+        return new MainType();
       })();
 
     var settings = {
         WMC: true,
-        WMCType: MainType.init()
+        WMCType: MainType
       }
 
   // Initialize WMC Type
   WMCType(settings, define);
 
 })((self || window || this), function (settings, w) {
-  const isWMC = settings.WMC;
+  var isWMC = settings.hasOwnProperty('WMC');
 
   function checkType(type, value) {
+      // Create SDKType
       w.SDKType = {
         [type]: value
-      };
+      }
+
+      // Create SDKType for WMC Globals
+      if ('WMC' in window) {
+        WMC.SDKType = w.SDKType;
+      }
+      return;
   }
 
   function WMCType(settings) {
@@ -55,6 +54,9 @@
       var WMCType = settings.WMCType;
       for (var isTypeof in WMCType) {
         checkType(isTypeof, WMCType[isTypeof]);
+        if (WMC.SDKType.api) {
+          loaderAPI(document, 'api.js', 'wmc-api', true);
+        }
       }
     }
   }
@@ -69,23 +71,42 @@
     return d.head.appendChild(el);
   }
 
+  // This WMC SDK Globals
+  function WMCGlobals(WMCGlobals, prop) {
+    console.debug('check this WMC -->', w.WMC);
+    // Overwrite WMC Globals once, it set to true
+    for (var p in prop) {
+      if (!WMCGlobals.hasOwnProperty(p)) {
+        WMCGlobals[p] = prop[p];
+      }
+      for (var i in prop[p]) {
+        if (!WMCGlobals[p].hasOwnProperty(i)) {
+          WMCGlobals[p][i] = prop[p][i];
+        }
+      }
+    }
+    return WMCGlobals;
+  }
+
+  // Initialization before WMC-SDK Compiler
   if (isWMC) {
-    w.WMC = {};
-    w.WMC.status = true;
+    window['WMC'] = {};
+    WMC.status = isWMC;
     WMCType(settings);
+    window['WMCGlobals'] = WMCGlobals;
   }
 
 }, undefined, document, "use strict");
 
 // WMC SDK - Intialization
-(function (WMC, modules, undefined, document, isStrict, deferfn) {
+(function (_WMC, modules, undefined, document, isStrict, deferfn) {
   isStrict;
 
-  WMC.synced = false,
+  _WMC.synced = false,
     defineWMC = {};
 
   // Initialize modules
-  modules('WMCjs', ['', 'WMCjs', 'WMCAsync'], WMC);
+  modules('WMCjs', ['', 'WMCjs', 'WMCAsync'], _WMC);
 
   // Complete Synchronization
   this.WMCjs = {};
@@ -107,10 +128,6 @@
   // Give function a definition to start creating that function
   defineWMC = function (createFn, args, bool) {
     var define = createFn || {}, dfnEach, defineFunctions;
-    // Validate WMC === true, then create overwrite WMC
-    if (WMC === true) {
-      this.WMC = {};
-    }
 
     dfnEach = function (dfnLists) {
       dfnLists = dfnLists;
@@ -124,61 +141,27 @@
     defineFunctions = function (define) {
       switch (define) {
         case 'login':
-
           args = args || [] || {};
-          window[define] = function (usr, pwd) {
-            this.usr = usr;
-            this.pwd = pwd;
-            this.key = '';
-            this.id = '';
-            this.WMC = true;
-
-            return this;
+          WMC[define] = function (usr, pwd) {
+            WMC[define].usr = usr;
+            WMC[define].pwd = pwd;
+            WMC[define].key = '';
+            WMC[define].id = '';
+            return WMC[define];
           }
-
-          this.WMC[define] = window[define];
-          console.debug('Created function >>>', define);
+          console.debug('Created function login >>>', define);
           return;
-
         case 'start':
-          args = args || [] || {};
-          window[define] = function (nameFn, startFn) {
-
-            if (nameFn == 'deck') {
-              nameFn = api.deck;
-              return nameFn.call(this);
-            } else if (nameFn == 'hero') {
-              nameFn = api.hero;
-              return nameFn.call(this);
-            }
-
-            (startFn instanceof Function === true) ?
-              [nameFn = (startFn).call(this)] :
-              (startFn instanceof Function === false) ?
-                [nameFn.call(this)] :
-                console.throw(nameFn + ' >>>> It is not a function. The function does not exist.');
-
-            return;
-          }
-          console.debug('Created function >>>', define);
-
-          this.WMC[define] = window[define];
-          return this;
-
+          WMC[define] = fn.engine.start();
+          console.debug('check this start -->', define);
+          return;
         case 'screen':
-
           args = args || [] || {};
-          window[define] = function (width, height) {
-
-          }
-
-          this.WMC[define] = window[define];
-          return this;
-
+          WMC[define] = function (width, height) {}
+          return;
         case 'server':
-
           args = args || [] || {};
-          window[define] = function (choose) {
+          WMC[define] = function (choose) {
 
             typeof choose === 'undefined' ? [console.error('Please specify your correct environment.')] :
               choose instanceof Function ? [(choose).call(this)] :
@@ -188,72 +171,26 @@
             console.debug('Initializing... >>>>>>', define);
             return;
           }
-          console.debug('Created function >>>', define);
-
-          this.WMC[define] = window[define];
-          return this;
-
+          console.debug('Created function server >>>', define);
+          return;
         case 'mapFunctions':
-
           // mapFunctions are only used for development. Use this function to detect the functions created
-          window[define] = fn.checkFuncs(args);
+          WMC[define] = fn.checkFuncs(args);
           if (typeof objects !== 'array') { return console.error('Could not map available WMC functions.') }
-
-          this.WMC[define] = window[define];
-          return this;
-
+          return;
         case 'load':
-
           args = args || [] || {};
           console.debug('This is load function');
-          window[define] = function (dfn, opts, callbackFn) {
-            opts = {};
-
-            if (callbackFn instanceof Function === false) { callbackFn = callbackFn; }
-
-            if (typeof dfn === 'object' && callbackFn instanceof Function === false) {
-              dfn.forEach(function (val, key) {
-                console.debug(val);
-
-                // Checks the function from UI to load
-                if (ui.hasOwnProperty(val)) {
-                  ui[val].call(this);
-                }
-
-                // Checks the function from API Environment to load
-                if (api.hasOwnProperty(val)) {
-                  var _api, _ui;
-                  _api = {
-                    type: "api",
-                    list: {
-                      environment: true,
-                      data: true
-                    }
-                  }
-                  console.debug('check this lists of api -->', api);
-                  deferfn.fn(_api, val);
-                  api[val].call(this, callbackFn);
-                }
-
-              });
-
-              callbackFn = callbackFn;
-              WMC[define] = window[define];
-              return this;
-            }
-
-          }
+          WMC[define] = fn.engine.load;
           return;
         case 'connect':
-
-          window[define] = api.callDataFunc;
+          WMC[define] = api.callDataFunc;
           console.debug('Created function >>>>>> ', define);
           return;
         case 'template':
-          window[define] = ui.template();
+          WMC[define] = ui.template;
           console.debug('Created function >>>>>>', define);
           return;
-
         default:
           break;
       }
@@ -321,10 +258,31 @@
 
     engine: {
       // Work in progress
-      start: function (apiName, apiCall) {
-        apiCall = apiCall || '';
-        apiName.call(this);
-        console.debug('Working function');
+      start: function(){
+
+        var START = (function(){
+          function start(nameFn, startFn) {
+            this.name = 'start';
+            return this.start = this.init;
+          }
+          start.prototype = {
+            init: function(_name, callback) {
+              _name = _name || "";
+              callback = callback || function(){};
+              if (_name == 'deck') {
+                return api.deck();
+              } else if (_name == 'hero') {
+                return api.hero();
+              } else {
+                callback();
+              }
+            }
+          }
+          console.debug('check this new start -->', start);
+          return new start;
+        })();
+
+        return START;
       },
       // Work in progress
       end: function () {
@@ -338,6 +296,42 @@
       },
       // Work in progress
       init: function () {
+      },
+      load: function (dfn, opts, callbackFn) {
+        opts = {};
+        this.name = 'load';
+        console.debug('check this --> dfn', dfn);
+        console.debug('check this --> opts', opts);
+        console.debug('check this --> callbackFn', callbackFn);
+
+        if (callbackFn instanceof Function === false) { callbackFn = callbackFn; }
+        if (typeof dfn === 'object' && callbackFn instanceof Function === false) {
+          dfn.forEach(function (val, key) {
+
+            // Checks the function from UI to load
+            if (ui.hasOwnProperty(val)) {
+              ui[val].call(this);
+            }
+
+            // Checks the function from API Environment to load
+            if (api.hasOwnProperty(val)) {
+              var _api, _ui;
+              _api = {
+                type: "api",
+                list: {
+                  environment: true,
+                  data: true
+                }
+              }
+              console.debug('check this lists of api -->', api);
+              deferfn.fn(_api, val);
+              api[val].call(this, callbackFn);
+            }
+          });
+          callbackFn = callbackFn;
+          return;
+        }
+
       }
     },
     checkFuncs: function (lookupFn) {
@@ -488,6 +482,9 @@
           }
         })
       }
+      else {
+        
+      }
 
     },
     // Sending message for WMC Message Listener
@@ -549,42 +546,46 @@
     // WMC HTML Template
     //
     //
-    templateEnable: function (element, event) {
-      var a;
-      // console.debug(element['data-wmc-template']);
-      var res = element['data-wmc-template'];
-      if (res === "on") {
-        return a = "on";
-      } else if (res === 'off' || typeof res === 'undefined') {
-        return a = 'off';
+    nodeEach: function(node, validNode) {
+      for (var n=0; n < node.length; n++) {
+        console.debug('check each nodeName -->',node[n].name);
+        if (node[n].name === validNode) {
+          alert(node[n].nodeName+"\n"+node[n].nodeValue);
+          return node[n].nodeValue;
+        }
       }
     },
+    templateEnable: function (element) {
+      // console.debug(element['data-wmc-template']);
+      console.debug('check this element -->', element);
+      var tmp_enable = ui.nodeEach(element, 'data-wmc-template');
+      return tmp_enable;
+    },
     template: function (flags, event) {
-
+      this.name = 'template';
       var htmlShowEach, templateAttrbCheck, callTemplateEnabler, htmlChildren,
         htmlAttributes, htmlNodeName, htmlNodeDataSets, wmcLabel, wmcType;
 
       flags = flags || {};
       // Check window type if parent or self
-      var win = (window.self == window.parent) ? parent : self,
-        getAllElem = win.document.body.children,
-        nodeName = 'wmc',
-        wmc = nodeName || nodeName.toUpperCase();
+      var getAllElem = document.body.children,
+          nodeName = 'wmc',
+          wmc = nodeName || nodeName.toUpperCase();
 
       // Checking all HTML elements
 
-
-      return {
+      return this, {
         checkElement: function () {
           for (var chck = 0; chck < getAllElem.length; chck++) {
             htmlShowEach = getAllElem[chck];
-            if ((htmlShowEach.length != -1)) {
+            if ( (htmlShowEach.length !== -1) ) {
+              console.debug('check this HTMLELEMENTS -->', htmlShowEach);
               templateAttrbCheck = htmlShowEach.attributes;
               callTemplateEnabler = ui.templateEnable(templateAttrbCheck);
               // Check callTemplateEnabler
               console.debug('check this callTemplateEnabler -->', callTemplateEnabler);
 
-              if (callTemplateEnabler == 'off') { alert('Template disabled.'); return true; }
+              if (callTemplateEnabler == 'off') { return alert('Template disabled.'); }
               htmlChildren = htmlShowEach.children;
               for (var x = 0; x < htmlChildren.length; x++) {
                 htmlAttributes = htmlChildren[x].attributes;
@@ -626,13 +627,13 @@
                               class: "wmc-login"
                             };
                             var htmlElement = htmlChildren[x];
-                            return ui.login(data, attributes, htmlElement);
+                            ui.login(data, attributes, htmlElement);
                           }
                           else if (wmcType === 'contact') {
                             var data = htmlChildren[x].innerText;
                             var attribute = {};
                             var htmlSelector = htmlChildren[x];
-                            return ui.contact(data, attributes, htmlElement);
+                            ui.contact(data, attributes, htmlElement);
                           }
 
                         case 'display':
@@ -694,8 +695,8 @@
     },
 
     create: function (element, attributes) {
-      var createDomElement = window.document.createElement(element);
-      console.debug(createDomElement);
+      var createDomElement = document.createElement(element);
+      console.log('created element -->',createDomElement);
       return createDomElement;
       // return createDomElement;
     },
@@ -749,11 +750,11 @@
           div = ui.create("div"),
           br = "br",
           span = ui.create("span"),
-          regexp = /({{}})/ig,
+          regexp = /[{]|[}]|[:]/ig,
           settings = renderTemplate.innerText;
 
 
-      var config = settings.split(regexp);
+      var config = settings.replace(regexp, "").split(regexp);
       // console.debug(settings);
       console.debug(config);
 
@@ -810,6 +811,8 @@
         "Confirm Password" + "<input type='" + attr.types.password + "' class='wmc-login confirm-pwd'>" + "<br>" +
         "<button type='submit' class='wmc-login btn-submit'>login</button>" +
         "</form>";
+      
+      return renderTemplate;
     },
     // UI Redeem
     redeem: function () {
@@ -820,13 +823,12 @@
     events: function (event, triggerFn) {
 
       if (event) {
-
         this.game = triggerFn || function () { };
         this.reward = triggerFn || function () { };
         this.player = triggerFn || function () { };
         this.back = triggerFn || function () { };
 
-        return this;
+        return this[event];
       }
 
     },
@@ -845,26 +847,31 @@
     // Different Modes
     // ---------------
     // Core
-    mode: (function(){
-      function modes(type){
-        this.type = type;
-        alert('Mode: ' + typeof this.type);
-      }
-      modes.prototype = {
-        select: function () {
-          mode.prototype[this.type].call(this);
-        },
-        story: function () {
-          alert('Story Mode!');
-          return 'story' || 'Story';
-        },
-        BGT: function () {
-          alert('Battleground Tournament');
-          return 'BGT' || 'Battlegroung Tournament';
+    mode: function() {
+
+      var MODE = (function(){
+        function modes(type){
+          this.type = type;
+          alert('Mode: ' + typeof this.type);
         }
-      }
-    return new modes;
-    })(),
+        modes.prototype = {
+          select: function () {
+            mode.prototype[this.type].call(this);
+          },
+          story: function () {
+            alert('Story Mode!');
+            return 'story' || 'Story';
+          },
+          BGT: function () {
+            alert('Battleground Tournament');
+            return 'BGT' || 'Battlegroung Tournament';
+          }
+        }
+      return new modes;
+      })();
+
+      return MODE;
+    },
     // Mode Selectors
     storyMode: function(mode){ ui.mode(mode) } ,
     // ------- This is the Battle Ground Tournament
@@ -1271,7 +1278,7 @@
 }).apply(null,
 
   // Enable API if TRUE
-  WMC.status === true && SDKType.hasOwnProperty('api') && SDKType.api ?
+  WMC.status === true && WMC.SDKType.hasOwnProperty('api') && WMC.SDKType.api ?
     [(self || window || this),
       function (state, api) {
 
@@ -1281,8 +1288,8 @@
       document,
       "use strict"] :
 
-    // Enable MODULES if TRUE
-    WMC.status === true && SDKType.hasOwnProperty('modules') && SDKType.modules ?
+  // Enable MODULES if TRUE
+  WMC.status === true && WMC.SDKType.hasOwnProperty('modules') && WMC.SDKType.modules ?
       [(self || window || this),
         function (state, modules, WMC) {
           var SDK = state === 'WMCjs';
@@ -1332,7 +1339,7 @@
           })();
 
           return deferral;
-        })(this || window|| self)] :
+        })(window || self || this)] :
 
       [('')]
 
