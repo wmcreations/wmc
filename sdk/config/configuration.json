@@ -1,0 +1,65 @@
+{
+  // Allow Demo Projects
+  "demo": {
+    "settings": false
+  },
+  // Allow Branding to overwrite WMC
+  "brand": {
+    "settings": {
+      "overwrite_rules": true,
+      "name": "BRAND",
+      "permission": {
+        // Default is set to false
+        "read_only": false
+      },
+      // Settings to set [secure = on] for Branded Companies will not Allow
+      // some modules to be overwritten. These are the benefits to prevent hacks.
+      "secure": "on"
+    }
+  },
+  // Allow Database Collections to overwrite configurations
+  //
+  "db": {
+    "settings": {
+      "db": "open",
+      // Default dbName is WMC, this can be configurable
+      "dbName": "WMC",
+      "access": {
+        "key": [],
+        // Default is always set to [public = true]
+        "public": true,
+        "private": false
+      },
+      "dbPermission": {
+        "read_only": false
+      },
+      "dbCollectionEnabler": {
+        // All files are set to default and designated at origin name
+        // If you want to overwrite changes on files:
+        // 1) Copy the origin files
+        // 2) Rename the copied files
+        // 3) Set you new designated files
+        "environment": {
+          "enable": false,
+          "file": "environment.json"
+        },
+        "game": {
+          "enable": false,
+          "file": "game.json"
+        },
+        "deck": {
+          "enable": false,
+          "file": "deck.json"
+        },
+        "quests": {
+          "enable":false,
+          "file": "quests.json"
+        },
+        "user": {
+          "enable":false,
+          "file": "user.json"
+        }
+      }
+    }
+  }
+}
