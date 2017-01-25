@@ -61,9 +61,69 @@
     ];
 
     // Open WMCjs permission and call functions to be exposed and available to use
-    WMCjs('open').defineFn(funcs).config('demo', true);
-    // WMC.load(['template','screen','deck','hero']);
-    WMC.template().checkElement();
+    WMCjs('open')
+    // Availing lists of functions from WMC
+    .defineFn(funcs)
+    // Setting WMC Configurations
+    .config({
+      list: {
+        demo: "demo",
+        brand: "BRAND",
+        db: "Database"
+      }
+    }, {
+      // Allow Demo Projects
+      demo: {
+        settings: true
+      },
+      // Allow Branding to overwrite WMC
+      brand: {
+        settings: {
+          overwrite_rules: true,
+          name: "BRAND",
+          permission: {
+            read_only: true || false
+          },
+          // Settings to set [secure = on] for Branded Companies will not Allow
+          // some modules to be overwritten. These are the benefits to prevent hacks.
+          secure: 'on'
+        }
+      },
+      // Allow Database Collections to overwrite configurations
+      //
+      db: {
+        settings: {
+          db: 'open',
+          // Default dbName is WMC, this can be configurable
+          dbName: 'WMC',
+          access: {
+            key: [],
+            // Default is always set to [public = true]
+            public: true,
+            private: false
+          },
+          dbPermission: {
+            read_only: false
+          },
+          dbCollectionEnabler: {
+            environment: {
+              enable: false,
+              file: ''
+            },
+            game: {
+              enable: false,
+              file: ''
+            },
+            deck: false,
+            quests: false,
+            user: false
+          }
+        }
+      }
+    });
+
+    WMC.load(['template','screen','deck','hero']);
+    // WMC.template().checkElement();
 
     // Start Customizing Here
     var usr = 'testUser',

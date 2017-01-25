@@ -206,22 +206,64 @@
     // Extension features of defineFn functions
     this.custom = function (func) { (typeof func === 'function') ? func.call(this) : console.debug('Error calling function or method', func); }
     this.config = function (nameFn, settings) {
+      // var BRAND = BRAND || "";
+
       nameFn = nameFn;
       settings = settings;
+
+      // BRAND = {
+      //   overwite: 'BRAND',
+      //   list: {
+      //     modules: true,
+      //     api: false
+      //   }
+      // }
+
       // Settings for nameFn
-      var isDemo = /^[D|d](emo)/ig;
-      var isDB = /^[D|d](atabase)/ig;
+      var isDemo = /^[D|d](emo|EMO)/ig,
+          isBrand = /[B|b](rand|RAND)/ig,
+          isDB = /^[D|d](atabase|ATABASE)/ig;
 
       // -- Database Config --
       // Example for settings format
       // { db:'open', dbName:'game.json'}
-      if (nameFn.match(isDB)) {
+      if (typeof nameFn == 'string' && nameFn.match(isDB)) {
         if (settings === null || settings === '' || settings === undefined) { settings = {} }
         if ( typeof (settings.db && settings.dbName) !== undefined ) return console.debug(settings.dbName);
       }
-      if (nameFn.match(isDemo)) {
+
+      // -- Demo Project Config --
+      // This configuration is for Demo Projects
+      if (typeof nameFn == 'string' && nameFn.match(isDemo)) {
         if (settings == 'on' || settings == 'enable' || settings == true) {
           window.demo = demo;
+        }
+      }
+
+      // -- BRANDING Config --
+      // This Configuration is for BRANDING
+      if (settings === true) {
+        if (typeof nameFn == 'object' && nameFn instanceof Array) {
+          if (nameFn.hasOwnProperty('brand') && nameFn.brand) {
+            for (var l in nameFn) {
+              for (var o in nameFn[l]) {
+                if (nameFn.list.hasOwnProperty(o) && nameFn.list.hasOwnProperty(o)) {
+                  if (nameFn.overwrite === l && l in window) {
+                    console.debug('check this nameFn overwrite -->', nameFn.overwrite);
+                    var obj = 'WMC' in window ? window['WMC'] : l ;
+                    window[l] = {};
+                    window[l] = obj;
+
+                    if (!nameFn.list.api) {
+
+                    }
+                    // Once Brand is implemented, then delete WMC
+                    delete window['WMC'];
+                  }
+                }
+              }
+            }
+          }
         }
       }
 
@@ -483,7 +525,7 @@
         })
       }
       else {
-        
+
       }
 
     },
@@ -750,11 +792,14 @@
           div = ui.create("div"),
           br = "br",
           span = ui.create("span"),
-          regexp = /[{]|[}]|[:]/ig,
+          regexp = {
+            scope: /[{]|[}]/ig,
+            colon: /[:]/ig
+          },
           settings = renderTemplate.innerText;
 
 
-      var config = settings.replace(regexp, "").split(regexp);
+      var config = settings.replace(regexp, "").split(regexp.colon);
       // console.debug(settings);
       console.debug(config);
 
@@ -811,7 +856,7 @@
         "Confirm Password" + "<input type='" + attr.types.password + "' class='wmc-login confirm-pwd'>" + "<br>" +
         "<button type='submit' class='wmc-login btn-submit'>login</button>" +
         "</form>";
-      
+
       return renderTemplate;
     },
     // UI Redeem
