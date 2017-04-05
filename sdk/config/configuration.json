@@ -1,10 +1,10 @@
 {
   // Allow Demo Projects
-  "demo": {
+  "type:demo": {
     "settings": false
   },
   // Allow Branding to overwrite WMC
-  "brand": {
+  "type:brand": {
     "settings": {
       "overwrite_rules": true,
       "name": "BRAND",
@@ -12,15 +12,17 @@
         // Default is set to false
         "read_only": false
       },
-      // Settings to set [secure = on] for Branded Companies will not Allow
+      // Settings is by default set [secure = on] for Branded Companies will not Allow
       // some modules to be overwritten. These are the benefits to prevent hacks.
       "secure": "on"
     }
   },
   // Allow Database Collections to overwrite configurations
-  //
-  "db": {
+  // The settings are already in default. Set your configurations and
+  // overwrite them here.
+  "type:db": {
     "settings": {
+      // Default is always set to [db = open]
       "db": "open",
       // Default dbName is WMC, this can be configurable
       "dbName": "WMC",
@@ -38,7 +40,7 @@
         // If you want to overwrite changes on files:
         // 1) Copy the origin files
         // 2) Rename the copied files
-        // 3) Set you new designated files
+        // 3) Set your new designated files
         "environment": {
           "enable": false,
           "file": "environment.json"
