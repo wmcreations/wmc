@@ -1,5 +1,5 @@
 ﻿// Walandio Martian Creation - SDK
-// Version 1.0.0
+// Version 1.1.0
 // Web Game App SDK -
 // @ Developer: walandio, martian
 //
@@ -12,24 +12,42 @@
   var MainType = (function () {
         function MainType() {
           this.path = define.location.href;
-          return this.init();
+          return this;
         }
         MainType.prototype = {
           api: (function () { return { api: true } })(),
           modules: (function () { return { modules: true } })(),
+          beforeInit: function(){
+            // Get all scripts elements
+            var el, s = document.getElementsByTagName('script');
+            for (var int=0; int<s.length; int++) {
+              var apiEnabled = s[int].getAttribute('data-wmc-api');
+              if (apiEnabled === 'on') {
+                return true;
+              } else {
+                return false;
+              }
+              
+            }
+          },
           init: function () {
-            var href = this.path;
-            if (href.includes('api')) return this.api; else return this.modules;
+            let href = this.path;
+            if (this.beforeInit() === true) {
+              return this.api;
+            } else {
+              if (href.includes('api')) return this.api; else return this.modules;
+            }
           }
         }
-        return new MainType();
+        return new MainType;
       })();
 
     var settings = {
+        APIEnabled: MainType.beforeInit(),
         WMC: true,
-        WMCType: MainType
+        WMCType: MainType.init()
       }
-
+  console.debug('check this settings -->', settings);
   // Initialize WMC Type
   WMCType(settings, define);
 
@@ -38,9 +56,8 @@
 
   function checkType(type, value) {
       // Create SDKType
-      w.SDKType = {
-        [type]: value
-      }
+      w.SDKType = {};
+      w.SDKType[type] = value;
 
       // Create SDKType for WMC Globals
       if ('WMC' in window) {
@@ -50,15 +67,28 @@
   }
 
   function WMCType(settings) {
+    if (settings.hasOwnProperty('APIEnabled') && settings.APIEnabled) {
+      builderScript(document, 'api/api.js', 'wmc-api', true);
+    }
     if (settings.hasOwnProperty('WMCType')) {
       var WMCType = settings.WMCType;
       for (var isTypeof in WMCType) {
         checkType(isTypeof, WMCType[isTypeof]);
-        if (WMC.SDKType.api) {
-          loaderAPI(document, 'api.js', 'wmc-api', true);
+        if (WMC.SDKType.api === true && settings.APIEnabled === false) {
+          loaderAPI(document, 'api.js', 'wmc-api', WMC.SDKType.api);
         }
       }
     }
+  }
+
+  function builderScript(d, s, id, async) {
+    let doc = d,
+        el = doc.createElement('script');
+    
+    el.src = s;
+    el.id = id;
+    el.async = async;
+    return d.body.appendChild(el);
   }
 
   function loaderAPI(d, s, id, async) {
