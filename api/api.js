@@ -1,115 +1,209 @@
 // Async API Call
 (function (global, api, undefined, document){
 
- var url = location;
- var rq = {};
+ var count, res, _nurl, _ourl, _nHashIndex, _oHashIndex, oldurl, newurl;
+
+ var apiURL = {},
+     loc = location,
+     rq,
+     handler,
+     getAPI;
 
  rq = {
-        apiName: "api",
-        apiOrigin: "api/",
-        apiHash: "#!",
-        apiLocation: window.location,
-        apiHref: function () {
-          return this.apiLocation.href
-        },
-        apiRep: function (v) {
-          return (v.href).match('#!');
-        },
-        apiHost: function() {
-          return this.apiLocation
-        },
-        callbackType: (function (ct) {
-          var isAPI = ct;
-              console.debug(isAPI);
-              if (isAPI) { return 'api' };
-        })(WMC.SDKType.api),
-
-        codeHash: function (v) {
-          var u = v.href,
-              m = this.apiRep(v),
-              h = (v.hash) ? (v.hash).match('#!') : '#!',
-              keygen, val;
-
-          if (!m) { location.href = (v.href).replace('api/','api/#!'), location.reload(); }
-              keygen = function (hash) {
-                let chars = {}, sets = {}, res = "", val, id;
-                    chars = { startlength: 1, minlength: 8, maxlength: 12,
-                              randomD1: Math.floor((Math.random()*8) + 7),
-                              randomD2: Math.floor((Math.random()*8) + 5),
-                              randomD3: Math.floor((Math.random()*5) + 1),
-                              randomD4: Math.floor((Math.random()*8) + 3),
-                              randomD5: Math.floor((Math.random()*8) + 2),
-                              randomD6: Math.floor((Math.random()*8) + 1),
-                              randomD7: Math.floor((Math.random()*8) + 4),
-                              randomD8: Math.floor((Math.random()*8) + 1),
-                              stackn : [], stackl : []
-                            };
-                    sets = { 1: 'a', 2: 'b', 3: 'c', 4: 'd',
-                            5: 'e', 6: 'f', 7: 'g', 8: 'h',
-                            9: 'i', 10: 'j', 11: 'k', 12: 'l',
-                            13: 'm', 14: 'n', 15: 'o', 16: 'p',
-                            17: 'q', 18: 'r', 19: 's', 20: 't',
-                            21: 'u', 22: 'v', 23: 'w', 24: 'x',
-                            25: 'y', 26: 'z'
-                            }
-                for (var i = chars.startlength; i < chars.minlength; i++) {
-                  (chars.stackn).push( chars['randomD' + i ] );
-                }
-                for (var c = chars.startlength; c < chars.minlength; c++) {
-                  (chars.stackl).push( sets[ chars['randomD' + c] ] );
-                }
-                for (var r = 0; r < (chars.stackn).length; r++) {
-                  res += chars.stackl[r] + chars.stackn[r];
-                }
-                return id = hash + res;
-              }
-              var _m = m;
-              console.debug('check m --->',_m);
-              val = (_m[0] || _m).replace('#!', keygen);
-              console.debug('final value --->',val);
-              return val;
-
-        },
-
-        appType: function () {},
-
-        extend: function (ep) {
-          // Endpoint
-          switch (ep) {
-
-            case bible:
-
-            return
-
-            case gc:
-
-            return
-
-            default:
-            break
-
-          }
-
+    history: {},
+    apiName: "api",
+    apiOrigin: "api/",
+    apiHash: window.location.hash,
+    apiLocation: window.location,
+    apiHref: function () {
+      let self = this;
+      return self.apiLocation.href
+    },
+    apiRep: function (v) {
+      let self = this;
+      return (v.href).match('#!');
+    },
+    apiHost: function() {
+      let self = this;
+      return self.apiLocation;
+    },
+    apiHistory: function(name, url) {
+      let self = this;
+      if (!self.history.hasOwnProperty(name) || !self.history[name]) {
+        self.historyRegister(name);
+      }
+      return self.history[name].push(url), self;
+    },
+    apiRelocation: function(url) {
+      self.location.href = url;
+    },
+    historyRegister: function(name) {
+      let self = this;
+      return self.history[name] = new Array(), self;
+    },
+    callbackType: (function () {
+      for (var t in WMC.SDKType) {
+        if (WMC.SDKType.hasOwnProperty(t) && WMC.SDKType[t] === true) { 
+          var a = {};
+          a[t] = WMC.SDKType[t];
+          return  a;
         }
       }
+    })(),
+    codeHash: function () {
+      var v = rq.apiLocation,
+          u = rq.apiLocation.href,
+          m = rq.apiRep(v),
+          h = (rq.hash) ? (rq.hash).match('#!') : '#!',
+          keygen, val;
 
- jq = {
+      if (!m) { location.href = (v.href).replace('api/','api/#!'), location.reload(); }
+          keygen = function (hash) {
+            let chars = {}, sets = {}, res = "", val, id;
+            var _m;
+                chars = { startlength: 1, minlength: 8, maxlength: 12,
+                          randomD1: Math.floor((Math.random()*8) + 7),
+                          randomD2: Math.floor((Math.random()*8) + 5),
+                          randomD3: Math.floor((Math.random()*5) + 1),
+                          randomD4: Math.floor((Math.random()*8) + 3),
+                          randomD5: Math.floor((Math.random()*8) + 2),
+                          randomD6: Math.floor((Math.random()*8) + 1),
+                          randomD7: Math.floor((Math.random()*8) + 4),
+                          randomD8: Math.floor((Math.random()*8) + 1),
+                          stackn : [], stackl : []
+                        };
+                sets = { 1: 'a', 2: 'b', 3: 'c', 4: 'd',
+                        5: 'e', 6: 'f', 7: 'g', 8: 'h',
+                        9: 'i', 10: 'j', 11: 'k', 12: 'l',
+                        13: 'm', 14: 'n', 15: 'o', 16: 'p',
+                        17: 'q', 18: 'r', 19: 's', 20: 't',
+                        21: 'u', 22: 'v', 23: 'w', 24: 'x',
+                        25: 'y', 26: 'z'
+                        }
+            for (var i = chars.startlength; i < chars.minlength; i++) {
+              (chars.stackn).push( chars['randomD' + i ] );
+            }
+            for (var c = chars.startlength; c < chars.minlength; c++) {
+              (chars.stackl).push( sets[ chars['randomD' + c] ] );
+            }
+            for (var r = 0; r < (chars.stackn).length; r++) {
+              res += chars.stackl[r] + chars.stackn[r];
+            }
+            return id = res;
+          }
 
+          _m = m;
+          val = (_m[0] || _m).replace(/(#!)/ig, keygen);
+
+          if (rq.new !== undefined){
+            rq.new = rq.new.replace("{key}", "{"+val+"}");
+          }  
+          rq.apiRelocation(rq.new);
+    }
+ };
+ 
+ // Create prototypes for handler
+ handler = (function(){
+   
+   function handler() {
+     this.name = 'handler';
+   }
+   handler.prototype = {
+     trigger: function(callbackName) {
+        rq[callbackName].call(self);
+     },
+     encryptAPICodeDB: function(data) {
+        this.trigger(data);
+     },
+     update: function(a, b) {
+        for (var d in b) {
+          for (var i in a) {
+            if (!a.hasOwnProperty(d)) {
+              a[d] = b[d];
+            }
+            else if (a.hasOwnProperty(d) && d == i) {
+              a[d] = b[d];
+            }
+          }
+        }
+        return a, this;
+     },
+     async: function(options) {
+        var promise = new Promise;
+        return {
+          data: options,
+          success: promise.resolve,
+          failed: promise.reject,
+          when: promise.when,
+          new: promise
+        }
+     }
+   }
+   return new handler;
+ })();
+
+ getAPI = {
+   
  }
-
-
- // http://localhost/api/
+ // API call works by applying #!/api/
+ // References:
+ // /g/ - call function get()
+ // /p/
  //
  // If Bible Data
- // hostname/api/#!/bible/
+ // wmc/#!/db?=/bible/
  //
  // If Game Data - User
- // hostname/type/#!/game-project/user
-
+ // wmc/#!/game-project/user
+ //
  // If Game Data - Stat
- // hostname/type/#!/game-project/stat
-global.req = rq;
-api({url:'.wmc-bible/book/genesis.json'});
+ // wmc/#!/game-project/stat
+global.addEventListener('hashchange', function(event){
+  event = event;
+  var apiURL = {
+    
+    // Registers New url
+    new: (function(eventURL){
+      if (eventURL.newURL === undefined) {
+        var _nurl = eventURL.target.location.hash.toString().substr(2);
+        rq.apiHistory(rq.apiName, _nurl);
+        return _nurl;
+      }
+      else {
+        var _nurl = eventURL.newURL.toString();
+        _nhashIndex = _nurl.search('#');
+
+        // Lists API history
+        var newurl = _nurl.substr(_nHashIndex+2);
+        rq.apiHistory(rq.apiName, newurl);
+        return newurl;
+      }
+    })(event),
+
+    // Registers Old url
+    old: (function(eventURL){
+      if (eventURL.oldURL === undefined) {
+        var count = rq.history.api.length;
+        if (count === 0) return rq.apiHash.substr(2);
+        for (var i=0; i<count; i++) {
+          res = i-1;
+        }
+        return rq.history.api[res];
+      } 
+      else {
+        var _ourl = eventURL.oldURL.toString();
+        hashIndex = _ourl.search('#');
+        
+        var oldurl = _ourl.substr(_oHashIndex+2);
+        return oldurl;
+      }
+    })(event)
+
+  }
+  handler.update(rq, apiURL).encryptAPICodeDB('codeHash');
+  return global.req = rq;
+});
+
 
 }).apply(null,
 
@@ -117,17 +211,25 @@ api({url:'.wmc-bible/book/genesis.json'});
 WMC.status === true && WMC.SDKType.api ?
 
 [ window,
-  function(request, response) {
-     var xhr = new XMLHttpRequest();
-     xhr.open("GET", request.url, true);
-     xhr.onload = function(e) {
-       console.debug('check this e for event -->', e);
-       console.debug('check status of this -->', this);
-       if (this.status == 200) {
-         WMC.db = JSON.parse(this.responseText);
-       }
-     }
-     xhr.send();
+  function(api, response) {
+
+    function beforeInit() {
+    }
+
+    return {
+      init: function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", api.url, true);
+        xhr.onload = function(e) {
+          console.debug('check this e for event -->', e);
+          console.debug('check status of this -->', this);
+          if (e.target.status == 200 && e.target.readyState === 4) {
+            WMC.db = JSON.parse(this.responseText);
+          }
+        }
+        xhr.send();
+      } 
+    }
  },
   undefined,
   document,
