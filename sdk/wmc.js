@@ -7,7 +7,7 @@
 
 // WMC Predefined Settings
 (function (define, WMCType, undefined, document, isStrict) {
-  isStrict;
+  // isStrict;
 
   var MainType = (function () {
         function MainType() {
@@ -15,8 +15,6 @@
           return this;
         }
         MainType.prototype = {
-          api: (function () { return { api: true } })(),
-          modules: (function () { return { modules: true } })(),
           beforeInit: function(){
             // Get all scripts elements
             var el, s = document.getElementsByTagName('script');
@@ -27,15 +25,17 @@
               } else {
                 return false;
               }
-              
             }
           },
           init: function () {
             let href = this.path;
             if (this.beforeInit() === true) {
-              return this.api;
+              return {
+                api: true,
+                modules: true
+              }
             } else {
-              if (href.includes('api')) return this.api; else return this.modules;
+              return { modules: true }
             }
           }
         }
@@ -52,32 +52,13 @@
   WMCType(settings, define);
 
 })((self || window || this), function (settings, w) {
-  var isWMC = settings.hasOwnProperty('WMC');
+  var isWMC = settings.WMC;
 
-  function checkType(type, value) {
-      // Create SDKType
-      w.SDKType = {};
-      w.SDKType[type] = value;
+  function asyncWMCType(settings) {
+    WMC.SDKType = settings.WMCType;
 
-      // Create SDKType for WMC Globals
-      if ('WMC' in window) {
-        WMC.SDKType = w.SDKType;
-      }
-      return;
-  }
-
-  function WMCType(settings) {
-    if (settings.hasOwnProperty('APIEnabled') && settings.APIEnabled) {
-      builderScript(document, 'api/api.js', 'wmc-api', true);
-    }
-    if (settings.hasOwnProperty('WMCType')) {
-      var WMCType = settings.WMCType;
-      for (var isTypeof in WMCType) {
-        checkType(isTypeof, WMCType[isTypeof]);
-        if (WMC.SDKType.api === true && settings.APIEnabled === false) {
-          loaderAPI(document, 'api.js', 'wmc-api', WMC.SDKType.api);
-        }
-      }
+    if (WMC.SDKType.hasOwnProperty('api') && WMC.SDKType.api === true) {
+      loaderAPI(document, '../../api/api.js', 'wmc-api', WMC.SDKType.api, { head: true } );
     }
   }
 
@@ -87,18 +68,25 @@
     
     el.src = s;
     el.id = id;
+    el.setAttribute(el.id, "");
     el.async = async;
     return d.body.appendChild(el);
   }
 
-  function loaderAPI(d, s, id, async) {
+  function loaderAPI(d, s, id, async, appendTo) {
     var doc = d,
         el = doc.createElement('script');
 
     el.src = s;
     el.id = id;
     el.async = async;
-    return d.head.appendChild(el);
+    
+    for (var child in appendTo) {
+      if (appendTo[child] === true) {
+        return d[child].appendChild(el);
+      }
+    }
+    // return d.head.appendChild(el);
   }
 
   // This WMC SDK Globals
@@ -122,8 +110,8 @@
   if (isWMC) {
     window['WMC'] = {};
     WMC.status = isWMC;
-    WMCType(settings);
-    window['WMCGlobals'] = WMCGlobals;
+    asyncWMCType(settings);
+    // window['WMCGlobals'] = WMCGlobals;
   }
 
 }, undefined, document, "use strict");
@@ -1352,19 +1340,8 @@
   WMC['BGTmode'] = ui.BGTMode;
 }).apply(null,
 
-  // Enable API if TRUE
-  WMC.status === true && WMC.SDKType.hasOwnProperty('api') && WMC.SDKType.api ?
-    [(self || window || this),
-      function (state, api) {
-
-        return (self || window || this)[state] = api;
-      },
-      undefined,
-      document,
-      "use strict"] :
-
   // Enable MODULES if TRUE
-  WMC.status === true && WMC.SDKType.hasOwnProperty('modules') && WMC.SDKType.modules ?
+  WMC.status === true && WMC.SDKType.hasOwnProperty('api') || WMC.SDKType.hasOwnProperty('modules') && WMC.SDKType.api || WMC.SDKType.modules === true ?
       [(self || window || this),
         function (state, modules, WMC) {
           var SDK = state === 'WMCjs';
