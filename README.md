@@ -1,4 +1,4 @@
-# Walandio Martian Creation SDK
+# World of Martian Creations SDK
 
 GETTING STARTED:
 ================
